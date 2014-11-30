@@ -2,6 +2,30 @@ from datetime import date, timedelta
 from optparse import OptionParser
 import urllib
 
+def get_box_score_content(url):
+    # Pull in content from the URL.
+    response = urllib.urlopen(conference_url)
+    url_content = response.read()
+
+    # A box score starts and ends with these.
+    target_start = '<h4 '
+    target_end = '</table>'
+
+    content_section_list = get_content_section_list(url_content, target_start,
+                                                    target_end)
+
+    for section in content_section_list:
+        start_index = section['start_index']
+        length = section['length']
+        box_score_content = url_content[start_index : start_index + length]
+        table_start = '<table'
+        idx_table_start =  box_score_content.find(table_start, 0)
+        header_text = box_score_content[0 : idx_table_start]
+        table_text = box_score_content[idx_table_start : len(box_score_content) - idx_table_start]
+
+        # Parse the school name out of the header.
+
+
 def get_conference_code_dict():
     conference_code_dict = {
      'America East': 99,
@@ -88,6 +112,37 @@ def get_conference_url_dict(datestamp):
         conference_url_dict[conference_name] = url
 
     return conference_url_dict
+
+def get_content_section_list(content, target_start, target_end):
+    idx_search = 0
+    idx_found = 0
+    idx_start = 0
+
+    content_section_list = []
+
+    while idx_found >= 0:
+        # Find the start of the section.
+        idx_found = content.find(target_start, idx_search)
+        if idx_found >= 0:
+            item_start_index = idx_found
+            # Step over and resume search.
+            idx_search = idx_found + len(target_start)
+
+            # Find the end of the section.
+            idx_found = content.find(target_end, idx_search)
+            if idx_found >= 0:
+                # Calculate index of next search.
+                idx_search = idx_found + len(target_end)
+
+                # Record results of search.
+                content_section = {}
+                content_section['start_index'] = item_start_index
+                content_section['length'] = idx_search - item_start_index
+                content_section_list.append(content_section)
+
+
+
+    return content_section_list
 
 def get_data_url_list(datestamp):
     """
