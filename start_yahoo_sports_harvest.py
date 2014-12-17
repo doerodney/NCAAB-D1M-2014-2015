@@ -4,7 +4,7 @@ import urllib
 
 def get_box_score_content(url):
     # Pull in content from the URL.
-    response = urllib.urlopen(conference_url)
+    response = urllib.urlopen(url)
     url_content = response.read()
 
     # A box score starts and ends with these.
@@ -21,9 +21,14 @@ def get_box_score_content(url):
         table_start = '<table'
         idx_table_start =  box_score_content.find(table_start, 0)
         header_text = box_score_content[0 : idx_table_start]
-        table_text = box_score_content[idx_table_start : len(box_score_content) - idx_table_start]
+        table_text = box_score_content[idx_table_start : ]
 
         # Parse the school name out of the header.
+        # Step over the target start and find the next '>'.
+        idx_name_start = box_score_content.find( '>', len(target_start)) + 1
+        idx_name_end = box_score_content.find('<', idx_name_start)
+        school_name = box_score_content[idx_name_start : idx_name_end]
+        print school_name
 
 
 def get_conference_code_dict():
@@ -229,10 +234,12 @@ def main():
         str(year), str(month).zfill(2), str(day).zfill(2))
     print 'Acquiring data for ', datestamp
 
-    data_url_list = get_data_url_list(datestamp)
+    #data_url_list = get_data_url_list(datestamp)
     print "\nURL List:"
-    for url in data_url_list:
-        print url
+    #for url in data_url_list:
+    #    print url
+    url = 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617'
+    get_box_score_content(url)
 
 main()
 
