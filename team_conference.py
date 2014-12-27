@@ -362,3 +362,13 @@ class TeamConference:
 
         return team_conference_dict
 
+@staticmethod
+def get_team_conference(team_name):
+    conference = ''
+    dict = TeamConference.get_team_conference_dict()
+    if team_name in dict.keys():
+        conference = dict[team_name]
+
+    return conference
+
+

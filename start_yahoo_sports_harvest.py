@@ -1,4 +1,6 @@
 from datetime import date, timedelta
+import game_url
+import xml.etree.ElementTree
 from optparse import OptionParser
 import urllib
 
@@ -19,9 +21,11 @@ def get_box_score_content(url):
         length = section['length']
         box_score_content = url_content[start_index : start_index + length]
         table_start = '<table'
+        thead_start = '<thead'
         idx_table_start =  box_score_content.find(table_start, 0)
+        idx_thead_start = box_score_content.find(thead_start, 0)
         header_text = box_score_content[0 : idx_table_start]
-        table_text = box_score_content[idx_table_start : ]
+        table_text = '%s%s' % ('<table>', box_score_content[idx_thead_start : ])
 
         # Parse the school name out of the header.
         # Step over the target start and find the next '>'.
@@ -29,6 +33,10 @@ def get_box_score_content(url):
         idx_name_end = box_score_content.find('<', idx_name_start)
         school_name = box_score_content[idx_name_start : idx_name_end]
         print school_name
+
+        # Parse the box score content.
+        root = xml.etree.ElementTree.fromstring(table_text)
+        print str(root)
 
 
 def get_conference_code_dict():
@@ -144,8 +152,6 @@ def get_content_section_list(content, target_start, target_end):
                 content_section['start_index'] = item_start_index
                 content_section['length'] = idx_search - item_start_index
                 content_section_list.append(content_section)
-
-
 
     return content_section_list
 
