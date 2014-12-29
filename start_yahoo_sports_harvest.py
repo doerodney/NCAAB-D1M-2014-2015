@@ -1,10 +1,37 @@
 from datetime import date, timedelta
 import game_url
+import team_game
+import team_conference
+import team_home_court
 import xml.etree.ElementTree
 from optparse import OptionParser
 import urllib
 
 def get_box_score_content(url):
+    summary_list = []
+
+    team_list = []
+    conference_list = []
+    home_court_list = []
+
+    # Get content embedded in the URL.
+    url_info = game_url.GameUrl(url)
+    first_team_name = url_info.first_team_name
+    second_team_name = url_info.second_team_name
+
+    game_key = url_info.game_key
+    game_date = url_info.date_text
+    court_id = url_info.location_code
+
+    team_list.append(first_team_name)
+    team_list.append(second_team_name)
+
+    conference_list.append(team_conference.TeamConference.get_team_conference(first_team_name))
+    conference_list.append(team_conference.TeamConference.get_team_conference(second_team_name))
+
+    home_court_list.append(team_home_court.TeamHomeCourt.get_team_home_court_code(first_team_name))
+    home_court_list.append(team_home_court.TeamHomeCourt.get_team_home_court_code(second_team_name))
+
     # Pull in content from the URL.
     response = urllib.urlopen(url)
     url_content = response.read()
@@ -16,16 +43,17 @@ def get_box_score_content(url):
     content_section_list = get_content_section_list(url_content, target_start,
                                                     target_end)
 
+    # Parse content into TeamGame objects.  These get appended to the
+    # summary_list.
     for section in content_section_list:
+        summary = team_game.TeamGame()
+
         start_index = section['start_index']
         length = section['length']
         box_score_content = url_content[start_index : start_index + length]
-        table_start = '<table'
-        thead_start = '<thead'
-        idx_table_start =  box_score_content.find(table_start, 0)
-        idx_thead_start = box_score_content.find(thead_start, 0)
-        header_text = box_score_content[0 : idx_table_start]
-        table_text = '%s%s' % ('<table>', box_score_content[idx_thead_start : ])
+        tr_start = '<tr>'
+        tr_end = '</tr>'
+        totals_id = 'table-1-totals'
 
         # Parse the school name out of the header.
         # Step over the target start and find the next '>'.
@@ -34,10 +62,48 @@ def get_box_score_content(url):
         school_name = box_score_content[idx_name_start : idx_name_end]
         print school_name
 
-        # Parse the box score content.
-        root = xml.etree.ElementTree.fromstring(table_text)
-        print str(root)
+        # Find the totals id.
+        idx_totals_id = box_score_content.find(totals_id, 0)
+        idx_tr_start = -1
+        idx_tr_end = -1
+        totals_text = ''
+        if (idx_totals_id > 0):
+            # Search backward to find the <tr>.
+            idx_tr_start = box_score_content.rfind(tr_start, 0, idx_totals_id)
+            if idx_tr_start > 0:
+                # Search forward to find the </tr>.
+                idx_tr_end = box_score_content.find(tr_end, idx_totals_id)
+                if idx_tr_end > 0:
+                    totals_text = box_score_content[idx_tr_start : (idx_tr_end + len(tr_end))]
+                    parse_box_score_totals(summary, totals_text)
+                    summary_list.append(summary)
 
+            # Complain if something is amiss...
+            if idx_tr_start < 0 or idx_tr_end < 0:
+                print "Summary data not found for % in %s." % (school_name, url)
+
+        else:
+            print "'%s' not found for % in %s." % (totals_id, school_name, url)
+
+    # Iterate the summary list to add external data.
+    idx_other = 1
+    for i in range(0,2):
+        summary_list[i].team = team_list[i]
+        summary_list[i].conference = conference_list[i]
+        summary_list[i].game_key = game_key
+        summary_list[i].game_date = game_date
+        summary_list[i].points_allowed = summary_list[idx_other].points_scored
+        summary_list[i].set_defensive_rating()
+        # Test for home court.  If it is either team's home court then
+        # neither team can be on a neutral court.
+        if (court_id == home_court_list[i]):
+            summary_list[i].home_court = True
+            summary_list[i].neutral_court = False
+            summary_list[idx_other].neutral_court = False
+
+        idx_other -= 1
+
+    return summary_list
 
 def get_conference_code_dict():
     conference_code_dict = {
@@ -172,6 +238,85 @@ def get_data_url_list(datestamp):
             data_url_list.append(game_url)
 
     return sorted(set(data_url_list))
+
+def parse_made_attempted_text(text):
+    # Format assumes made-attempted.
+    token_list = '-'.text.split()
+
+    return token_list
+
+def parse_box_score_totals(summary, totals_xml):
+    attrib_name_class = 'class'
+    class_field_goals = 'ncaab-stat-type-28 stat-total'
+    class_three_pointer = 'ncaab-stat-type-30 stat-total'
+    class_free_throws = 'ncaab-stat-type-29 stat-total'
+    class_offensive_rebounds = 'ncaab-stat-type-14 stat-total'
+    class_defensive_rebounds = 'ncaab-stat-type-15 stat-total'
+    class_total_rebounds = 'ncaab-stat-type-16 stat-total'
+    class_assists = 'ncaab-stat-type-17 stat-total'
+    class_turnovers = 'ncaab-stat-type-20 stat-total'
+    class_steals = 'ncaab-stat-type-18 stat-total'
+    class_blocked_shots = 'ncaab-stat-type-19 stat-total'
+    class_personal_fouls = 'ncaab-stat-type-22 stat-total'
+    class_points_scored = 'ncaab-stat-type-13 stat-total'
+    class_totals = 'totals'
+
+    # Parse the box score content.
+    root = xml.etree.ElementTree.fromstring(totals_xml)
+    for td in root.findall('td'):
+        attrib_dict = td.attrib
+        text = td.text
+
+        if attrib_name_class in attrib_dict.keys():
+            class_value = attrib_dict[attrib_name_class]
+
+            if class_value == class_field_goals:
+                (made, attempted) = text.split('-')
+                summary.field_goals_made = int(made)
+                summary.field_goals_attempted = int(attempted)
+
+            elif class_value == class_three_pointer:
+                (made, attempted) = text.split('-')
+                summary.three_pointers_made = int(made)
+                summary.three_pointers_attempted = int(attempted)
+
+            elif class_value == class_free_throws:
+                (made, attempted) = text.split('-')
+                summary.free_throws_made = int(made)
+                summary.free_throws_attempted = int(attempted)
+
+            elif class_value == class_offensive_rebounds:
+                summary.offensive_rebounds = int(text)
+
+            elif class_value == class_defensive_rebounds:
+                summary.defensive_rebounds = int(text)
+
+            elif class_value == class_total_rebounds:
+                summary.total_rebounds = int(text)
+
+            elif class_value == class_assists:
+                summary.assists = int(text)
+
+            elif class_value == class_turnovers:
+                summary.turnovers = int(text)
+
+            elif class_value == class_steals:
+                summary.steals = int(text)
+
+            elif class_value == class_blocked_shots:
+                summary.blocked_shots = int(text)
+
+            elif class_value == class_personal_fouls:
+                summary.personal_fouls = int(text)
+
+            elif class_value == class_points_scored:
+                summary.points_scored = int(text)
+
+    # At this point, all data should be available.
+    summary.estimate_possessions()
+    summary.set_offensive_rating()
+
+    return summary
 
 def parse_game_url(content, start_index):
     """

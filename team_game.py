@@ -3,12 +3,15 @@ class TeamGame:
         self.__team = ''
         self.__conference = ''
         self.__game_key = ''
+        self.__game_date = ''
+        self.__home_court = False
+        self.__neutral_court = True
         self.__minutes_played = 0
-        self.__three_pointers_taken = 0
+        self.__three_pointers_attempted = 0
         self.__three_pointers_made = 0
-        self.__field_goals_taken = 0
+        self.__field_goals_attempted = 0
         self.__field_goals_made = 0
-        self.__free_throws_taken = 0
+        self.__free_throws_attempted = 0
         self.__free_throws_made = 0
         self.__offensive_rebounds = 0
         self.__defensive_rebounds = 0
@@ -19,6 +22,16 @@ class TeamGame:
         self.__blocked_shots = 0
         self.__personal_fouls = 0
         self.__points_scored = 0
+
+        # These are estimated parameters
+        self.__possessions = 0
+        self.__offensive_rating = 0
+        self.__defensive_rating = 0
+        self.__effective_field_goal_percentage = 0
+
+        # This comes from the other team.
+        self.__points_allowed = 0
+
 
     @property
     def team(self):
@@ -37,12 +50,36 @@ class TeamGame:
         self.__conference = value
 
     @property
+    def home_court(self):
+        return self.__home_court
+
+    @home_court.setter
+    def home_court(self, value):
+        self.__home_court = value
+
+    @property
+    def neutral_court(self):
+        return self.__neutral_court
+
+    @neutral_court.setter
+    def neutral_court(self, value):
+        self.__neutral_court = value
+
+    @property
     def game_key(self):
         return self.__game_key
 
     @game_key.setter
     def game_key(self, value):
         self.__game_key = value
+        
+    @property
+    def game_date(self):
+        return self.__game_date
+
+    @game_date.setter
+    def game_date(self, value):
+        self.__game_date = value
 
     @property
     def three_pointers_attempted(self):
@@ -77,6 +114,22 @@ class TeamGame:
         self.__field_goals_attempted = value
         
     @property
+    def free_throws_attempted(self):
+        return self.__free_throws_attempted
+
+    @free_throws_attempted.setter
+    def free_throws_attempted(self, value):
+        self.__free_throws_attempted = value
+        
+    @property
+    def free_throws_made(self):
+        return self.__free_throws_made
+
+    @free_throws_made.setter
+    def free_throws_made(self, value):
+        self.__free_throws_made = value
+        
+    @property
     def offensive_rebounds(self):
         return self.__offensive_rebounds
 
@@ -109,6 +162,14 @@ class TeamGame:
         self.__assists = value
         
     @property
+    def turnovers(self):
+        return self.__turnovers
+
+    @turnovers.setter
+    def turnovers(self, value):
+        self.__turnovers = value 
+        
+    @property
     def steals(self):
         return self.__steals
 
@@ -139,3 +200,37 @@ class TeamGame:
     @points_scored.setter
     def points_scored(self, value):
         self.__points_scored = value
+
+    @property
+    def points_allowed(self):
+        return self.__points_allowed
+
+    @points_allowed.setter
+    def points_allowed(self, value):
+        self.__points_allowed = value
+
+    @property
+    def possessions(self):
+        return self.__possessions
+
+    def estimate_possessions(self):
+        # http://en.wikipedia.org/wiki/APBRmetrics
+        # Possessions = 0.96 * (FGA - OffReb + TO + (0.475 * FTA))
+        field_goals_attempted = self.field_goals_attempted
+        offensive_rebounds = self.offensive_rebounds
+        turnovers = self.turnovers
+        free_throws_attempted = self.free_throws_attempted
+        self.__possessions = 0.96 * (field_goals_attempted -
+                                     offensive_rebounds +
+                                     turnovers +
+                                     (0.475 * free_throws_attempted))
+
+    def set_offensive_rating(self):
+        # http://en.wikipedia.org/wiki/APBRmetrics
+        # OffensiveRating = Pts Scored * 100 / Possessions
+        self.__offensive_rating = self.points_scored * 100 / self.possessions
+
+    def set_defensive_rating(self):
+        # http://en.wikipedia.org/wiki/APBRmetrics
+        # DefensiveRating = Pts Allowed * 100 / Possessions
+        self.__defensive_rating = self.points_allowed * 100 / self.possessions
