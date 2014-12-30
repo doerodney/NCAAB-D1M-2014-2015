@@ -293,6 +293,14 @@ def get_csv_report_header():
 
     return csv_header
 
+def is_division_one_game(url):
+    # Example of a bad URL:
+    # http://sports.yahoo.com/ncaab/central-pennsylvania-college-knights-radford-highlanders-201412280483
+
+    result = game_url.GameUrl.is_division_one(url)
+
+    return result
+
 def parse_box_score_totals(summary, totals_xml):
     attrib_name_class = 'class'
     class_field_goals = 'ncaab-stat-type-28 stat-total'
@@ -433,32 +441,39 @@ def main():
         str(year), str(month).zfill(2), str(day).zfill(2))
     print 'Acquiring data for ', datestamp
 
-    #data_url_list = get_data_url_list(datestamp)
-    data_url_list = ['http://sports.yahoo.com/ncaab/central-pennsylvania-college-knights-radford-highlanders-201412280483']
-    # 'http://sports.yahoo.com/ncaab/abilene-christian-wildcats-grand-canyon-antelopes-201412280237',
-     #                'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617']
+    data_url_list = get_data_url_list(datestamp)
+    #data_url_list = ['http://sports.yahoo.com/ncaab/central-pennsylvania-college-knights-radford-highlanders-201412280483',
+    #                 'http://sports.yahoo.com/ncaab/abilene-christian-wildcats-grand-canyon-antelopes-201412280237',
+    #                 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617']
 
+    date_result_list = []
     csv_header = get_csv_report_header()
-    print csv_header
+    date_result_list.append(csv_header)
 
     for url in data_url_list:
-        #    print url
-        #url = 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617'
-        # Get a game summary for the winner and the loser.
-        summary_list = get_box_score_content(url)
+        if is_division_one_game(url):
+            # Get a game summary for the winner and the loser.
+            summary_list = get_box_score_content(url)
 
-        # Gross, half wrong assumption about winner and loser.
-        winner = summary_list[1]
-        loser = summary_list[0]
+            # Gross, half wrong assumption about winner and loser.
+            winner = summary_list[1]
+            loser = summary_list[0]
 
-        # Correct assumption as necessary.
-        if (summary_list[0].points_scored > summary_list[1].points_scored):
-            winner = summary_list[0]
-            loser = summary_list[1]
+            # Correct assumption as necessary.
+            if (summary_list[0].points_scored > summary_list[1].points_scored):
+                winner = summary_list[0]
+                loser = summary_list[1]
 
-        # Generate a report string.
-        row_text = generate_summary_row(winner, loser)
-        print row_text
+            # Generate a report string.
+            row_text = generate_summary_row(winner, loser)
+            date_result_list.append(row_text)
+            print row_text
+
+    result_file_name = 'Results-%s.csv' % (datestamp)
+    file = open(result_file_name, 'w')
+    for result in date_result_list:
+        file.write('%s\n' % result)
+    file.close()
 
 main()
 
