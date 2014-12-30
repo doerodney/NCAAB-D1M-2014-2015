@@ -7,6 +7,16 @@ import xml.etree.ElementTree
 from optparse import OptionParser
 import urllib
 
+def generate_summary_row(winner, loser):
+    winner_common_string = winner.get_common_report_string()
+    loser_common_string = loser.get_common_report_string()
+
+    summary_row = '"%s","%s","%s","%s",%s,%s' % \
+                  (winner.game_key, winner.game_date, winner.home_court, winner.neutral_court,
+                   winner_common_string, loser_common_string)
+
+    return summary_row
+
 def get_box_score_content(url):
     summary_list = []
 
@@ -239,11 +249,46 @@ def get_data_url_list(datestamp):
 
     return sorted(set(data_url_list))
 
-def parse_made_attempted_text(text):
-    # Format assumes made-attempted.
-    token_list = '-'.text.split()
+def get_csv_report_header():
+    column_header_list = \
+        [
+            '"game_key"',
+            '"date"',
+            '"win_home_court"',
+            '"win_neutral_court"',
+            '"win_team"',
+            '"win_conference"',
+            '"win_possessions"',
+            '"win_points_scored"',
+            '"win_offensive_rating"',
+            '"win_defensive_rating"',
+            '"win_field_goal_fraction"',
+            '"win_three_point_fraction"',
+            '"win_free_throw_fraction"',
+            '"win_offensive_rebounds"',
+            '"win_defensive_rebounds"',
+            '"win_steals"',
+            '"win_blocked_shots"',
+            '"win_personal_fouls"',
+            '"loss_team"',
+            '"loss_conference"',
+            '"loss_possessions"',
+            '"loss_points_scored"',
+            '"loss_offensive_rating"',
+            '"loss_defensive_rating"',
+            '"loss_field_goal_fraction"',
+            '"loss_three_point_fraction"',
+            '"loss_free_throw_fraction"',
+            '"loss_offensive_rebounds"',
+            '"loss_defensive_rebounds"',
+            '"loss_steals"',
+            '"loss_blocked_shots"',
+            '"loss_personal_fouls"'
+        ]
 
-    return token_list
+    csv_header = ','.join(column_header_list)
+
+    return csv_header
 
 def parse_box_score_totals(summary, totals_xml):
     attrib_name_class = 'class'
@@ -385,12 +430,24 @@ def main():
         str(year), str(month).zfill(2), str(day).zfill(2))
     print 'Acquiring data for ', datestamp
 
+
     #data_url_list = get_data_url_list(datestamp)
     print "\nURL List:"
     #for url in data_url_list:
     #    print url
     url = 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617'
-    get_box_score_content(url)
+    summary_list = get_box_score_content(url)
+
+    winner = summary_list[1]
+    loser = summary_list[0]
+    if (summary_list[0].points_scored > summary_list[1].points_scored):
+        winner = summary_list[0]
+        loser = summary_list[1]
+
+    csv_header = get_csv_report_header()
+    print csv_header
+    row_text = generate_summary_row(winner, loser)
+    print row_text
 
 main()
 

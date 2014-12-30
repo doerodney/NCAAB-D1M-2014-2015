@@ -32,6 +32,24 @@ class TeamGame:
         # This comes from the other team.
         self.__points_allowed = 0
 
+    def get_common_report_string(self):
+        common_report_string = '"%s","%s",%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' % \
+                               (self.team, self.conference,
+                                str(self.possessions),
+                                str(self.points_scored),
+                                str(self.__offensive_rating),
+                                str(self.__defensive_rating),
+                                str(self.field_goals_made / self.field_goals_attempted),
+                                str(self.three_pointers_made / self.three_pointers_attempted),
+                                str(self.free_throws_made / self.free_throws_attempted),
+                                str(self.offensive_rebounds),
+                                str(self.defensive_rebounds),
+                                str(self.steals),
+                                str(self.blocked_shots),
+                                str(self.personal_fouls)
+                               )
+
+        return common_report_string
 
     @property
     def team(self):
