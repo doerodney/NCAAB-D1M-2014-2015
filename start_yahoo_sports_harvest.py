@@ -442,8 +442,8 @@ def main():
     print 'Acquiring data for ', datestamp
 
     data_url_list = get_data_url_list(datestamp)
-    #data_url_list = ['http://sports.yahoo.com/ncaab/central-pennsylvania-college-knights-radford-highlanders-201412280483',
-    #                 'http://sports.yahoo.com/ncaab/abilene-christian-wildcats-grand-canyon-antelopes-201412280237',
+    #data_url_list = ['http://sports.yahoo.com/ncaab/johnson-tn-royals-charleston-southern-buccaneers-201412290111',
+    #                 'http://sports.yahoo.com/ncaab/lipscomb-bisons-chattanooga-mocs-201412290581']
     #                 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617']
 
     date_result_list = []
@@ -469,11 +469,12 @@ def main():
             date_result_list.append(row_text)
             print row_text
 
-    result_file_name = 'Results-%s.csv' % (datestamp)
-    file = open(result_file_name, 'w')
-    for result in date_result_list:
-        file.write('%s\n' % result)
-    file.close()
+    if len(date_result_list) > 1:
+        result_file_name = 'Results-%s.csv' % (datestamp)
+        file = open(result_file_name, 'w')
+        for result in date_result_list:
+            file.write('%s\n' % result)
+        file.close()
 
 main()
 

@@ -40,22 +40,32 @@ class GameUrl:
         # location code:  0617
 
         self.__game_key = self.__url.replace('http://sports.yahoo.com/ncaab/', '')
-        team_token_list = self.__game_key.split('-')
-        date_location = team_token_list[-1]
+        token_list = self.__game_key.split('-')
+        date_location = token_list[-1]
         self.__date_text = date_location[0:8]
         self.__location_code = date_location[8:]
 
+        team_token_list = token_list[0 : len(token_list) - 1]
         team_conference_dict = team_conference.TeamConference.get_team_conference_dict()
         team_name_list = team_conference_dict.keys()
-        first_team_name = '%s-%s' % (team_token_list[0], team_token_list[1])
-        tokens_used = 2
-        while first_team_name not in team_name_list:
-            first_team_name = '%s-%s' % (first_team_name, team_token_list[tokens_used])
-            tokens_used += 1
 
-        self.__first_team_name = first_team_name
-        second_team_name_token_list = team_token_list[tokens_used : len(team_token_list) - 1]
-        self.__second_team_name = '-'.join(second_team_name_token_list)
+        # Build the team names from right to left.
+        second_team_name = '%s-%s' % (team_token_list[-2], team_token_list[-1])
+        idx_next_token = len(team_token_list) - 3
+
+        while second_team_name not in team_name_list and idx_next_token >= 0:
+            second_team_name = '%s-%s' % (team_token_list[idx_next_token], second_team_name)
+            idx_next_token -= 1
+
+        if idx_next_token >= 0:
+            team_token_list = team_token_list[0 : idx_next_token + 1]
+
+            first_team_name = '-'.join(team_token_list)
+
+            if first_team_name in team_name_list:
+                self.__first_team_name = first_team_name
+                self.__second_team_name = second_team_name
+
 
     @staticmethod
     def is_division_one(url):
@@ -73,31 +83,26 @@ class GameUrl:
         team_conference_dict = team_conference.TeamConference.get_team_conference_dict()
         team_name_list = team_conference_dict.keys()
 
-        # Try to build a name from left to right.
-        team_name = '%s-%s' % (team_name_tokens[0], team_name_tokens[1])
-        idx_next_token = 2
-        while team_name not in team_name_list and idx_next_token < team_name_token_count:
-            team_name = '%s-%s' % (team_name, team_name_tokens[idx_next_token])
-            idx_next_token += 1
+        team_token_list = game_key_token_list[0 : len(game_key_token_list) - 1]
+        team_conference_dict = team_conference.TeamConference.get_team_conference_dict()
+        team_name_list = team_conference_dict.keys()
 
-        # At the point, we should have a valid team name if we
-        # didn't use all the tokens.
-        if idx_next_token < team_name_token_count:
-            first_name = team_name
+        # Build the team names from right to left.
+        second_team_name = '%s-%s' % (team_token_list[-2], team_token_list[-1])
+        idx_next_token = len(team_token_list) - 3
 
-            # Try to build a name from right to left.
-            idx_next_token = team_name_token_count - 3
-            team_name = '%s-%s' % (team_name_tokens[-2], team_name_tokens[-1])
-            while team_name not in team_name_list and idx_next_token >= 0:
-                team_name = '%s-%s' % (team_name_tokens[idx_next_token], team_name)
-                idx_next_token -= 1
+        while second_team_name not in team_name_list and idx_next_token >= 0:
+            second_team_name = '%s-%s' % (team_token_list[idx_next_token], second_team_name)
+            idx_next_token -= 1
 
-            if idx_next_token >= 0:
-                second_name = team_name
+        if idx_next_token >= 0:
+            team_token_list = team_token_list[0 : idx_next_token + 1]
 
-        if len(first_name) > 0 and len(second_name) > 0 and first_name != second_name:
-            result = True
-        else:
-            print 'This does not involve two Division One teams:  %s' % game_key
+            first_team_name = '-'.join(team_token_list)
+
+            if first_team_name in team_name_list:
+                result = True
+            else:
+                print 'This does not involve two Division One teams:  %s' % game_key
 
         return result
