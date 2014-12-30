@@ -8,11 +8,12 @@ from optparse import OptionParser
 import urllib
 
 def generate_summary_row(winner, loser):
+    winner_court_desc = get_win_court_description(winner, loser)
     winner_common_string = winner.get_common_report_string()
     loser_common_string = loser.get_common_report_string()
 
-    summary_row = '"%s","%s","%s","%s",%s,%s' % \
-                  (winner.game_key, winner.game_date, winner.home_court, winner.neutral_court,
+    summary_row = '"%s","%s","%s",%s,%s' % \
+                  (winner.game_key, winner.game_date, winner_court_desc,
                    winner_common_string, loser_common_string)
 
     return summary_row
@@ -64,13 +65,6 @@ def get_box_score_content(url):
         tr_start = '<tr>'
         tr_end = '</tr>'
         totals_id = 'table-1-totals'
-
-        # Parse the school name out of the header.
-        # Step over the target start and find the next '>'.
-        idx_name_start = box_score_content.find( '>', len(target_start)) + 1
-        idx_name_end = box_score_content.find('<', idx_name_start)
-        school_name = box_score_content[idx_name_start : idx_name_end]
-        print school_name
 
         # Find the totals id.
         idx_totals_id = box_score_content.find(totals_id, 0)
@@ -231,6 +225,16 @@ def get_content_section_list(content, target_start, target_end):
 
     return content_section_list
 
+def get_win_court_description(winner, loser):
+    desc = 'home'
+
+    if winner.neutral_court == True:
+        desc = 'neutral'
+    elif loser.home_court == True:
+        desc = 'away'
+
+    return desc
+
 def get_data_url_list(datestamp):
     """
     Iterates conference-combinations to get the data urls for each game played
@@ -254,8 +258,7 @@ def get_csv_report_header():
         [
             '"game_key"',
             '"date"',
-            '"win_home_court"',
-            '"win_neutral_court"',
+            '"win_court"',
             '"win_team"',
             '"win_conference"',
             '"win_possessions"',
@@ -430,24 +433,32 @@ def main():
         str(year), str(month).zfill(2), str(day).zfill(2))
     print 'Acquiring data for ', datestamp
 
-
     #data_url_list = get_data_url_list(datestamp)
-    print "\nURL List:"
-    #for url in data_url_list:
-    #    print url
-    url = 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617'
-    summary_list = get_box_score_content(url)
-
-    winner = summary_list[1]
-    loser = summary_list[0]
-    if (summary_list[0].points_scored > summary_list[1].points_scored):
-        winner = summary_list[0]
-        loser = summary_list[1]
+    data_url_list = ['http://sports.yahoo.com/ncaab/central-pennsylvania-college-knights-radford-highlanders-201412280483']
+    # 'http://sports.yahoo.com/ncaab/abilene-christian-wildcats-grand-canyon-antelopes-201412280237',
+     #                'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617']
 
     csv_header = get_csv_report_header()
     print csv_header
-    row_text = generate_summary_row(winner, loser)
-    print row_text
+
+    for url in data_url_list:
+        #    print url
+        #url = 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617'
+        # Get a game summary for the winner and the loser.
+        summary_list = get_box_score_content(url)
+
+        # Gross, half wrong assumption about winner and loser.
+        winner = summary_list[1]
+        loser = summary_list[0]
+
+        # Correct assumption as necessary.
+        if (summary_list[0].points_scored > summary_list[1].points_scored):
+            winner = summary_list[0]
+            loser = summary_list[1]
+
+        # Generate a report string.
+        row_text = generate_summary_row(winner, loser)
+        print row_text
 
 main()
 

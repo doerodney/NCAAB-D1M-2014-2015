@@ -25,6 +25,7 @@ class TeamConference:
             'auburn-tigers' : 'Southeastern',
             'austin-peay-governors' : 'Ohio Valley',
             'ball-state-cardinals' : 'Mid-American',
+            'bakersfield-roadrunners' : 'Western Athletic',  # NOT USING csu- version below, evidently.
             'baylor-bears' : 'Big 12',
             'belmont-bruins' : 'Ohio Valley',
             'bethune-cookman-wildcats' : 'Mid-Eastern',
