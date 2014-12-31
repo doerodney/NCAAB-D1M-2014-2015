@@ -51,61 +51,63 @@ def get_box_score_content(url):
     target_start = '<h4 '
     target_end = '</table>'
 
-    content_section_list = get_content_section_list(url_content, target_start,
-                                                    target_end)
+    content_section_list = get_content_section_list(url_content, target_start, target_end)
 
-    # Parse content into TeamGame objects.  These get appended to the
-    # summary_list.
-    for section in content_section_list:
-        summary = team_game.TeamGame()
+    if len(content_section_list) > 1:
+        # Parse content into TeamGame objects.  These get appended to the
+        # summary_list.
+        for section in content_section_list:
+            summary = team_game.TeamGame()
 
-        start_index = section['start_index']
-        length = section['length']
-        box_score_content = url_content[start_index : start_index + length]
-        tr_start = '<tr>'
-        tr_end = '</tr>'
-        totals_id = 'table-1-totals'
+            start_index = section['start_index']
+            length = section['length']
+            box_score_content = url_content[start_index : start_index + length]
+            tr_start = '<tr>'
+            tr_end = '</tr>'
+            totals_id = 'table-1-totals'
 
-        # Find the totals id.
-        idx_totals_id = box_score_content.find(totals_id, 0)
-        idx_tr_start = -1
-        idx_tr_end = -1
-        totals_text = ''
-        if (idx_totals_id > 0):
-            # Search backward to find the <tr>.
-            idx_tr_start = box_score_content.rfind(tr_start, 0, idx_totals_id)
-            if idx_tr_start > 0:
-                # Search forward to find the </tr>.
-                idx_tr_end = box_score_content.find(tr_end, idx_totals_id)
-                if idx_tr_end > 0:
-                    totals_text = box_score_content[idx_tr_start : (idx_tr_end + len(tr_end))]
-                    parse_box_score_totals(summary, totals_text)
-                    summary_list.append(summary)
+            # Find the totals id.
+            idx_totals_id = box_score_content.find(totals_id, 0)
+            idx_tr_start = -1
+            idx_tr_end = -1
+            totals_text = ''
+            if (idx_totals_id > 0):
+                # Search backward to find the <tr>.
+                idx_tr_start = box_score_content.rfind(tr_start, 0, idx_totals_id)
+                if idx_tr_start > 0:
+                    # Search forward to find the </tr>.
+                    idx_tr_end = box_score_content.find(tr_end, idx_totals_id)
+                    if idx_tr_end > 0:
+                        totals_text = box_score_content[idx_tr_start : (idx_tr_end + len(tr_end))]
+                        parse_box_score_totals(summary, totals_text)
+                        summary_list.append(summary)
 
-            # Complain if something is amiss...
-            if idx_tr_start < 0 or idx_tr_end < 0:
-                print "Summary data not found for % in %s." % (school_name, url)
+                # Complain if something is amiss...
+                if idx_tr_start < 0 or idx_tr_end < 0:
+                    print "Summary data not found for % in %s." % (school_name, url)
 
-        else:
-            print "'%s' not found for % in %s." % (totals_id, school_name, url)
+            else:
+                print "'%s' not found for % in %s." % (totals_id, school_name, url)
 
-    # Iterate the summary list to add external data.
-    idx_other = 1
-    for i in range(0,2):
-        summary_list[i].team = team_list[i]
-        summary_list[i].conference = conference_list[i]
-        summary_list[i].game_key = game_key
-        summary_list[i].game_date = game_date
-        summary_list[i].points_allowed = summary_list[idx_other].points_scored
-        summary_list[i].set_defensive_rating()
-        # Test for home court.  If it is either team's home court then
-        # neither team can be on a neutral court.
-        if (court_id == home_court_list[i]):
-            summary_list[i].home_court = True
-            summary_list[i].neutral_court = False
-            summary_list[idx_other].neutral_court = False
+        # Iterate the summary list to add external data.
+        idx_other = 1
+        for i in range(0,2):
+            summary_list[i].team = team_list[i]
+            summary_list[i].conference = conference_list[i]
+            summary_list[i].game_key = game_key
+            summary_list[i].game_date = game_date
+            summary_list[i].points_allowed = summary_list[idx_other].points_scored
+            summary_list[i].set_defensive_rating()
+            # Test for home court.  If it is either team's home court then
+            # neither team can be on a neutral court.
+            if (court_id == home_court_list[i]):
+                summary_list[i].home_court = True
+                summary_list[i].neutral_court = False
+                summary_list[idx_other].neutral_court = False
 
-        idx_other -= 1
+            idx_other -= 1
+    else:
+        print 'Content error for %s.' % url
 
     return summary_list
 
@@ -442,7 +444,7 @@ def main():
     print 'Acquiring data for ', datestamp
 
     data_url_list = get_data_url_list(datestamp)
-    #data_url_list = ['http://sports.yahoo.com/ncaab/johnson-tn-royals-charleston-southern-buccaneers-201412290111',
+    #data_url_list = ['http://sports.yahoo.com/ncaab/gonzaga-bulldogs-san-diego-toreros-201412290497']
     #                 'http://sports.yahoo.com/ncaab/lipscomb-bisons-chattanooga-mocs-201412290581']
     #                 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617']
 
@@ -454,20 +456,20 @@ def main():
         if is_division_one_game(url):
             # Get a game summary for the winner and the loser.
             summary_list = get_box_score_content(url)
+            if len(summary_list) == 2:
+                # Gross, half wrong assumption about winner and loser.
+                winner = summary_list[1]
+                loser = summary_list[0]
 
-            # Gross, half wrong assumption about winner and loser.
-            winner = summary_list[1]
-            loser = summary_list[0]
+                # Correct assumption as necessary.
+                if (summary_list[0].points_scored > summary_list[1].points_scored):
+                    winner = summary_list[0]
+                    loser = summary_list[1]
 
-            # Correct assumption as necessary.
-            if (summary_list[0].points_scored > summary_list[1].points_scored):
-                winner = summary_list[0]
-                loser = summary_list[1]
-
-            # Generate a report string.
-            row_text = generate_summary_row(winner, loser)
-            date_result_list.append(row_text)
-            print row_text
+                # Generate a report string.
+                row_text = generate_summary_row(winner, loser)
+                date_result_list.append(row_text)
+                print row_text
 
     if len(date_result_list) > 1:
         result_file_name = 'Results-%s.csv' % (datestamp)

@@ -83,7 +83,7 @@ class TeamConference:
             'duke-blue-devils' : 'Atlantic Coast',
             'duquesne-dukes' : 'Atlantic Ten',
             'east-carolina-pirates' : 'Conference USA',
-	    'east-tennessee-state-buccaneers' : 'Southern',
+	        'east-tennessee-state-buccaneers' : 'Southern',
             'eastern-illinois-panthers' : 'Ohio Valley',
             'eastern-kentucky-colonels' : 'Ohio Valley',
             'eastern-michigan-eagles' : 'Mid-American',
