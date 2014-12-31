@@ -46,6 +46,16 @@ class GameUrl:
         self.__location_code = date_location[8:]
 
         team_token_list = token_list[0 : len(token_list) - 1]
+        game_team_name_list = GameUrl.parse_game_team_name_list(team_token_list)
+
+        if len(game_team_name_list) == 2:
+            self.__first_team_name = game_team_name_list[0]
+            self.__second_team_name = game_team_name_list[1]
+
+    @staticmethod
+    def parse_game_team_name_list(team_token_list):
+        game_team_name_list = []
+
         team_conference_dict = team_conference.TeamConference.get_team_conference_dict()
         team_name_list = team_conference_dict.keys()
 
@@ -53,56 +63,43 @@ class GameUrl:
         second_team_name = '%s-%s' % (team_token_list[-2], team_token_list[-1])
         idx_next_token = len(team_token_list) - 3
 
+        # Continue to add tokens until a match occurs or tokens are exhausted.
         while second_team_name not in team_name_list and idx_next_token >= 0:
             second_team_name = '%s-%s' % (team_token_list[idx_next_token], second_team_name)
             idx_next_token -= 1
 
+        # Are the tokens all used?  If not, this found the second name.
         if idx_next_token >= 0:
-            team_token_list = team_token_list[0 : idx_next_token + 1]
 
+            # Reduce the token list.
+            team_token_list = team_token_list[0 : idx_next_token + 1]
+            # The first team should be all that are left.
             first_team_name = '-'.join(team_token_list)
 
+            # Test if the first name is in the list.
             if first_team_name in team_name_list:
-                self.__first_team_name = first_team_name
-                self.__second_team_name = second_team_name
+                # Add both names to the return value.
+                game_team_name_list.append(first_team_name)
+                game_team_name_list.append(second_team_name)
 
+        return game_team_name_list
 
     @staticmethod
     def is_division_one(url):
         result = False
+        # Example of a bad url:
         # http://sports.yahoo.com/ncaab/central-pennsylvania-college-knights-radford-highlanders-201412280483
-        first_name = ''
-        second_name = ''
 
         game_key = url.replace('http://sports.yahoo.com/ncaab/', '')
         game_key_token_list = game_key.split('-')
         team_name_token_count = len(game_key_token_list) - 1
-        team_name_tokens = game_key_token_list[0 : team_name_token_count ]
 
-        # Get a list of valid division one team names.
-        team_conference_dict = team_conference.TeamConference.get_team_conference_dict()
-        team_name_list = team_conference_dict.keys()
+        team_token_list = game_key_token_list[0 : team_name_token_count]
+        game_team_name_list = GameUrl.parse_game_team_name_list(team_token_list)
+        if len(game_team_name_list) == 2:
+            result = True
 
-        team_token_list = game_key_token_list[0 : len(game_key_token_list) - 1]
-        team_conference_dict = team_conference.TeamConference.get_team_conference_dict()
-        team_name_list = team_conference_dict.keys()
-
-        # Build the team names from right to left.
-        second_team_name = '%s-%s' % (team_token_list[-2], team_token_list[-1])
-        idx_next_token = len(team_token_list) - 3
-
-        while second_team_name not in team_name_list and idx_next_token >= 0:
-            second_team_name = '%s-%s' % (team_token_list[idx_next_token], second_team_name)
-            idx_next_token -= 1
-
-        if idx_next_token >= 0:
-            team_token_list = team_token_list[0 : idx_next_token + 1]
-
-            first_team_name = '-'.join(team_token_list)
-
-            if first_team_name in team_name_list:
-                result = True
-            else:
-                print 'This does not involve two Division One teams:  %s' % game_key
+        else:
+            print 'This does not involve two Division One teams:  %s' % game_key
 
         return result
