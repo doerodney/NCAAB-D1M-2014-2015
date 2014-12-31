@@ -25,7 +25,7 @@ class TeamConference:
             'auburn-tigers' : 'Southeastern',
             'austin-peay-governors' : 'Ohio Valley',
             'ball-state-cardinals' : 'Mid-American',
-            'bakersfield-roadrunners' : 'Western Athletic',  # NOT USING csu- version below, evidently.
+            'bakersfield-roadrunners' : 'Western Athletic',  # New for 2014-2015
             'baylor-bears' : 'Big 12',
             'belmont-bruins' : 'Ohio Valley',
             'bethune-cookman-wildcats' : 'Mid-Eastern',
@@ -43,7 +43,7 @@ class TeamConference:
             'byu-cougars' : 'West Coast',
             'cal-poly-mustangs' : 'Big West',
             'cal-state-fullerton-titans' : 'Big West',
-            'cal-state-northridge-matadors' : 'Big West',
+            'cal-state-northridge-matadors' : 'Big West',  # Obsolete 2014-2015
             'california-golden-bears' : 'Pac-12',
             'campbell-fighting-camels' : 'Big South',
             'canisius-golden-griffins' : 'Metro Atlantic Athletic',
@@ -68,7 +68,8 @@ class TeamConference:
             'coppin-state-eagles' : 'Mid-Eastern',
             'cornell-big-red' : 'Ivy League',
             'creighton-bluejays' : 'Big East',
-            'csu-bakersfield-roadrunners' : 'Western Athletic',
+            'csu-bakersfield-roadrunners' : 'Western Athletic', # Obsolete 2014-2015
+            'csun-matadors' : 'Big West',  # New for 2014-2015
             'dartmouth-big-green' : 'Ivy League',
             'davidson-wildcats' : 'Southern',
             'dayton-flyers' : 'Atlantic Ten',
@@ -82,7 +83,7 @@ class TeamConference:
             'duke-blue-devils' : 'Atlantic Coast',
             'duquesne-dukes' : 'Atlantic Ten',
             'east-carolina-pirates' : 'Conference USA',
-            'east-tennessee-state' : 'Atlantic Sun',
+	    'east-tennessee-state-buccaneers' : 'Southern',
             'eastern-illinois-panthers' : 'Ohio Valley',
             'eastern-kentucky-colonels' : 'Ohio Valley',
             'eastern-michigan-eagles' : 'Mid-American',
@@ -153,7 +154,7 @@ class TeamConference:
             'long-beach-state-49ers' : 'Big West',
             'longwood-lancers' : 'Big South',
             'louisiana-monroe-warhawks' : 'Sun Belt',
-            'louisiana-ragin-cajuns' : 'Sun Belt',
+            'louisiana-lafayette-ragin-cajuns' : 'Sun Belt',
             'louisiana-tech-bulldogs' : 'Conference USA',
             'louisville-cardinals' : 'American Athletic',
             'loyola-chicago-ramblers' : 'Missouri Valley',
@@ -192,7 +193,6 @@ class TeamConference:
             'murray-state-racers' : 'Ohio Valley',
             'navy-midshipmen' : 'Patriot League',
             'nebraska-cornhuskers' : 'Big Ten',
-            'nebraska-omaha-mavericks' : 'Summit',
             'nevada-wolf-pack' : 'Mountain West',
             'new-hampshire-wildcats' : 'America East',
             'new-mexico-lobos' : 'Mountain West',
@@ -225,6 +225,7 @@ class TeamConference:
             'oklahoma-state-cowboys' : 'Big 12',
             'old-dominion-monarchs' : 'Conference USAConference USA',
             'ole-miss-rebels' : 'Southeastern',
+            'omaha-mavericks' : 'Summit',
             'oral-roberts-golden-eagles' : 'Southland',
             'oregon-ducks' : 'Pac-12',
             'oregon-state-beavers' : 'Pac-12',
@@ -265,8 +266,7 @@ class TeamConference:
             'savannah-state-tigers' : 'Mid-Eastern',
             'seattle-redhawks' : 'Western Athletic',
             'seton-hall-pirates' : 'Big East',
-            'siena-heights-saints' : 'Metro Atlantic Athletic',
-            'siena-saints' : 'Metro Atlantic Athletic',  # purposeful duplicate
+            'siena-saints' : 'Metro Atlantic Athletic',  
             'siue-cougars' : 'Ohio Valley',
             'smu-mustangs' : 'American Athletic',
             'south-alabama-jaguars' : 'Sun Belt',
