@@ -322,4 +322,25 @@ plotHomeCountAdvantage <- function( team_name, df) {
 	points(home_index, df_team$margin[home_index], col='green', pch=17)
 	points(away_index, df_team$margin[away_index], col='red', pch=25)
 }
+# Top 16 tournament 2015-01-12
+# First round
+#predictWinner('kentucky-wildcats', 'west-virginia-mountaineers', df, model)
+#predictWinner('virginia-cavaliers', 'north-carolina-tar-heels', df, model)
+#predictWinner('gonzaga-bulldogs', 'maryland-terrapins', df, model)
+#predictWinner('duke-blue-devils', 'wichita-state-shockers', df, model)
+#predictWinner('villanova-wildcats', 'notre-dame-fighting-irish', df, model)
+#predictWinner('louisville-cardinals', 'iowa-state-cyclones', df, model)
+#predictWinner('wisconsin-badgers', 'arizona-wildcats', df, model)
+#predictWinner('utah-runnin-utes', 'kansas-jayhawks', df, model)
+# Second Round
+#predictWinner('kentucky-wildcats', 'utah-runnin-utes', df, model)
+#predictWinner('gonzaga-bulldogs', 'iowa-state-cyclones', df, model)
+#predictWinner('duke-blue-devils', 'notre-dame-fighting-irish', df, model)
+#predictWinner('wisconsin-badgers', 'virginia-cavaliers', df, model)
+# Semi-Final
+#predictWinner('kentucky-wildcats', 'wisconsin-badgers', df, model)
+#predictWinner('gonzaga-bulldogs', 'duke-blue-devils', df, model)
+# Final
+#predictWinner('kentucky-wildcats', 'duke-blue-devils', df, model)
+#"duke-blue-devils wins 5635 scenarios."
 
