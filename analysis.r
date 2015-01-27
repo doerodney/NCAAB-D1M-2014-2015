@@ -351,9 +351,16 @@ plotOffensiveRating <- function( team_name, other_team_name, df) {
 	other_win_rows = which(dfprime$win_team == other_team_name)
 	other_loss_rows = which(dfprime$loss_team == other_team_name)
 	
-	# Initially plot blanks just to initialize the graph.
+	
 	x = c(team_win_rows, team_loss_rows, other_win_rows, other_loss_rows) 
-	plot(x, offensive_rating_list[x], main=title_label, xlab='', ylab='offensive_rating', type='n')
+	offensive_rating_list = c(
+		dfprime$win_offensive_rating[team_win_rows],
+		dfprime$loss_offensive_rating[team_loss_rows],
+		dfprime$win_offensive_rating[other_win_rows],
+		dfprime$loss_offensive_rating[other_loss_rows] )
+	
+	# Initially plot blanks just to initialize the graph.
+	plot(x, offensive_rating_list, main=title_label, xlab='', ylab='offensive_rating', type='n')
 	legend("topright", 
 			legend=c(team_win_label, team_loss_label, 
 			         other_team_win_label, other_team_loss_label), 
