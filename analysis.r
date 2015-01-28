@@ -327,16 +327,12 @@ plotHomeCountAdvantage <- function( team_name, df) {
 plotOffensiveRating <- function( team_name, other_team_name, df) {
 	# Get the offensive rating for each team in both win and loss results.
 	# Get the relevant rows from the dataframe argument.
-	rows = c( which(df$win_team == team_name), 
-			  which(df$loss_team == team_name), 
-			  which(df$win_team == other_team_name),
-			  which(df$loss_team == other_team_name) )
 	
-	# Create a subset dataframe.
-	dfprime = data.frame(df$win_team[rows], df$win_offensive_rating[rows], 
-		df$loss_team[rows], df$loss_offensive_rating[rows])
-	colnames(dfprime) = c('win_team', 'win_offensive_rating', 
-	                      'loss_team', 'loss_offensive_rating')
+	# Create a subset dataframe.					  
+	dfprime = subset(df, 
+		select=c(win_team, win_offensive_rating, loss_team, loss_offensive_rating),
+		subset=(win_team == team_name | loss_team == team_name |
+		        win_team == other_team_name | loss_team == other_team_name))
 	
 	# Create labels for the legend.
 	team_win_label = sprintf("%s win", team_name)
@@ -351,7 +347,7 @@ plotOffensiveRating <- function( team_name, other_team_name, df) {
 	other_win_rows = which(dfprime$win_team == other_team_name)
 	other_loss_rows = which(dfprime$loss_team == other_team_name)
 	
-	
+	# Create initial plot data.
 	x = c(team_win_rows, team_loss_rows, other_win_rows, other_loss_rows) 
 	offensive_rating_list = c(
 		dfprime$win_offensive_rating[team_win_rows],
@@ -373,6 +369,50 @@ plotOffensiveRating <- function( team_name, other_team_name, df) {
 	points(other_loss_rows, dfprime$loss_offensive_rating[other_loss_rows], col='red', pch=4)
 }
 
+plotDefensiveRating <- function( team_name, other_team_name, df) {
+	# Get the defensive rating for each team in both win and loss results.
+	# Get the relevant rows from the dataframe argument.
+	# Create a subset dataframe.					  
+	dfprime = subset(df, 
+		select=c(win_team, win_defensive_rating, loss_team, loss_defensive_rating),
+		subset=(win_team == team_name | loss_team == team_name |
+		        win_team == other_team_name | loss_team == other_team_name))
+	
+	# Create labels for the legend.
+	team_win_label = sprintf("%s win", team_name)
+	team_loss_label = sprintf("%s loss", team_name)
+	other_team_win_label = sprintf("%s win", other_team_name)
+	other_team_loss_label = sprintf("%s loss", other_team_name)
+	title_label = sprintf("Defensive ratings of %s and %s", team_name, other_team_name)
+	
+	# Plot points for team win and loss indexes.
+	team_win_rows = which(dfprime$win_team == team_name)
+	team_loss_rows = which(dfprime$loss_team == team_name)
+	other_win_rows = which(dfprime$win_team == other_team_name)
+	other_loss_rows = which(dfprime$loss_team == other_team_name)
+	
+	# Create initial plot data.
+	x = c(team_win_rows, team_loss_rows, other_win_rows, other_loss_rows) 
+	defensive_rating_list = c(
+		dfprime$win_defensive_rating[team_win_rows],
+		dfprime$loss_defensive_rating[team_loss_rows],
+		dfprime$win_defensive_rating[other_win_rows],
+		dfprime$loss_defensive_rating[other_loss_rows] )
+	
+	# Initially plot blanks just to initialize the graph.
+	plot(x, defensive_rating_list, main=title_label, xlab='', ylab='defensive_rating', type='n')
+	legend("topright", 
+			legend=c(team_win_label, team_loss_label, 
+			         other_team_win_label, other_team_loss_label), 
+			col=c('green', 'red', 'blue', 'orange'), 
+			pch=c(2, 6, 3, 4))
+	
+	points(team_win_rows, dfprime$win_defensive_rating[team_win_rows], col='green', pch=2)
+	points(team_loss_rows, dfprime$loss_defensive_rating[team_loss_rows], col='red', pch=6)
+	points(other_win_rows, dfprime$win_defensive_rating[other_win_rows], col='blue', pch=3)
+	points(other_loss_rows, dfprime$loss_defensive_rating[other_loss_rows], col='red', pch=4)
+}
+
 # Bracket couples:
 # 1-16
 # 8-9
@@ -382,20 +422,12 @@ plotOffensiveRating <- function( team_name, other_team_name, df) {
 # 3-14
 # 7-10
 # 2-15
-
-
-# 2015-01-25 Top Eight Tournament  Quarter Final
-# predictWinner('kentucky-wildcats', 'notre-dame-fighting-irish', df, model)
-# predictWinner('virginia-cavaliers', 'arizona-wildcats', df, model)
-# predictWinner('gonzaga-bulldogs', 'wisconsin-badgers', df, model)
-# predictWinner('villanova-wildcats', 'duke-blue-devils', df, model)
-# "duke-blue-devils wins 6309 scenarios."
-
-# Semi-Final
-# predictWinner('notre-dame-fighting-irish', 'virginia-cavaliers', df, model)
-# "notre-dame-fighting-irish wins 5462 scenarios."
-# predictWinner('wisconsin-badgers', 'arizona-wildcats', df, model)
-#"wisconsin-badgers wins 6261 scenarios."
-# Final
-# predictWinner('notre-dame-fighting-irish', 'wisconsin-badgers', df, model)
-# "notre-dame-fighting-irish wins 5372 scenarios."
+# Top 16 tournament 2015-01-26.
+# predictWinner('kentucky-wildcats', 'maryland-terrapins', df, model)
+# predictWinner('notre-dame-fighting-irish', 'kansas-jayhawks', df, model)
+# predictWinner('wisconsin-badgers', 'wichita-state-shockers', df, model)
+# predictWinner('duke-blue-devils', 'north-carolina-tar-heels', df, model)
+# predictWinner('arizona-wildcats', 'utah-runnin-utes', df, model)
+# predictWinner('gonzaga-bulldogs', 'vcu-rams', df, model)
+# predictWinner('villanova-wildcats', 'louisville-cardinals', df, model)
+# predictWinner('iowa-state-cyclones', 'virginia-cavaliers', df, model)
