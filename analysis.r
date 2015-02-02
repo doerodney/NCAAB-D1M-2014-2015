@@ -18,7 +18,8 @@ pythagorean_expectation_root<-function(x, points_scored, points_allowed, win_fra
 }
 
 get_pythogorean_expectation_exponent<-function(points_scored, points_allowed, win_fraction) {
-	n = uniroot(pythagorean_expectation_root, c(0.1, 100.0), points_scored = 1000, points_allowed = 800, win_fraction = 0.8)
+	n = uniroot(pythagorean_expectation_root, c(0.1, 
+	100.0), points_scored = 1000, points_allowed = 800, win_fraction = 0.8)
 	return(n)
 }
 
@@ -221,14 +222,22 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
     print(msg)
     nTeamWins = length(which(teamWins == TRUE))
     nOpponentWins = nScenarios - nTeamWins
+	margin = numeric(nScenarios)
+	xlabel = ''
+	ylabel = 'Simulated margin of victory'
+	x = seq(1:nScenarios)
     if (nTeamWins > nOpponentWins) {
-        msg = sprintf("%s wins %d scenarios.", teamName, nTeamWins)
+		margin = sort(pointsScored$teamPointsScored - pointsScored$opponentPointsScored)
+		xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", teamName, nTeamWins, mean(margin))
     } else {
-        msg = sprintf("%s wins %d scenarios.", opponentName, nOpponentWins)
+		margin = sort(pointsScored$opponentPointsScored - pointsScored$teamPointsScored)
+		xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", opponentName, nOpponentWins, mean(margin))
     }
-    print(msg)
+	plot(x, margin, main=msg, xlab=xlabel, ylab=ylabel, pch=6)
+	abline(h=0)
+	abline(v=(nScenarios/2))
+    print(xlabel)
 	
-
 	#return(pointsScored)
 }
 #predictWinner('villanova-wildcats', 'seton-hall-pirates', df, model)
