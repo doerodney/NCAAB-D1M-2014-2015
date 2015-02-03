@@ -233,16 +233,18 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
     margin = sort(pointsScored$opponentPointsScored - pointsScored$teamPointsScored)
     xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", opponentName, nOpponentWins, mean(margin))
   }
-  uniqueMargin = unique(margin)
-  marginCount = numeric(length(uniqueMargin))
-  normMarginCount = numeric(length(uniqueMargin))
-  for (i in 1:length(uniqueMargin)) {
-    marginCount[i] = length(which(margin == uniqueMargin[i]))
-    normMarginCount[i] = marginCount[i] / nScenarios
-  }
   
-  plot(uniqueMargin, normMarginCount, main=msg, xlab=xlabel, ylab=ylabel, pch=16)
+  
+  margin.min = min(margin)
+  margin.max = max(margin)
+  margin.mean = mean(margin)
+  margin.sd = sd(margin)
+  x = seq(margin.min, margin.max, length=1000)
+  y = dnorm(x, mean=margin.mean, sd=margin.sd)
+  plot(x, y, main=msg, xlab=xlabel, ylab=ylabel, type="l")
+  
   abline(v=(mean(margin)))
+
   print(xlabel)
   
   #return(pointsScored)
@@ -288,7 +290,7 @@ getHomeAwayMarginOfVictory<- function( team_name, df) {
 	return(df_team)
 }
 
-getHomeCountAdvantage <- function( team_name, df) {
+getHomeCourtAdvantage <- function( team_name, df) {
 	df_team = getHomeAwayMarginOfVictory(team_name, df)
 	mdl = aov(margin ~ court, data=df_team)
 	
@@ -303,7 +305,7 @@ getHomeCountAdvantage <- function( team_name, df) {
 	return(alist)
 }
 
-plotHomeCountAdvantage <- function( team_name, df) {
+plotHomeCourtAdvantage <- function( team_name, df) {
 	df_team = getHomeAwayMarginOfVictory(team_name, df)
 	alist = getHomeCountAdvantage(team_name, df)
 	home_court_advantage = alist$home_court_advantage
