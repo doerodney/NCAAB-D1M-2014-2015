@@ -115,130 +115,137 @@ getTeamConference <- function(df, teamName) {
 
 predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
 {
-    teamConference = getTeamConference(df, teamName)
-    teamPossessions = getPossessions(df, teamName)
-    teamOffensiveRatings = getOffensiveRatings(df, teamName)
-    teamDefensiveRatings = getDefensiveRatings(df, teamName)
-    teamDefensiveRebounds  = getDefensiveRebounds(df, teamName)
-    teamSteals = getSteals(df, teamName)
-    teamPersonalFouls = getPersonalFouls(df, teamName)
-    teamBlockedShots = getBlockedShots(df, teamName)
-
-    opponentConference = getTeamConference(df, opponentName)
-    opponentPossessions = getPossessions(df, opponentName)
-    opponentOffensiveRatings = getOffensiveRatings(df, opponentName)
-    opponentDefensiveRatings = getDefensiveRatings(df, opponentName)
-    opponentDefensiveRebounds  = getDefensiveRebounds(df, opponentName)
-    opponentSteals = getSteals(df, opponentName)
-    opponentPersonalFouls = getPersonalFouls(df, opponentName)
-    opponentBlockedShots = getBlockedShots(df, opponentName)
-
-    win_conference = rep(teamConference, nScenarios)
-    win_possessions = sample(min(teamPossessions):max(teamPossessions), nScenarios, replace=TRUE)
-    win_offensive_rating = runif(nScenarios, min(teamOffensiveRatings ), max( teamOffensiveRatings ))
-    win_defensive_rating = runif(nScenarios, min(teamDefensiveRatings), max(teamDefensiveRatings))
-    win_personal_fouls = sample(min(teamPersonalFouls):max(teamPersonalFouls), nScenarios, replace=TRUE)
-    loss_conference = rep(opponentConference, nScenarios)
-    loss_possessions = sample(min(opponentPossessions):max(opponentPossessions), nScenarios, replace=TRUE)
-    loss_offensive_rating = runif(nScenarios, min(opponentOffensiveRatings), max(opponentOffensiveRatings))
-    loss_defensive_rating = runif(nScenarios, min(opponentDefensiveRatings), max(opponentDefensiveRatings))
-    loss_defensive_rebounds = runif(nScenarios, min(opponentDefensiveRebounds), max(opponentDefensiveRebounds))
-    loss_steals = sample(min(opponentSteals):max(opponentSteals), nScenarios, replace=TRUE)
-    loss_blocked_shots = sample(min(opponentBlockedShots):max(opponentBlockedShots), nScenarios, replace=TRUE)
-    loss_personal_fouls = sample(min(opponentPersonalFouls):max(opponentPersonalFouls), nScenarios, replace=TRUE)
-
-    # Create data frame for team score prediction.
-    dfpt = cbind.data.frame(
-        win_conference,
-        win_possessions,
-        win_offensive_rating,
-        win_defensive_rating,
-        win_personal_fouls,
-        loss_conference,
-        loss_possessions,
-        loss_offensive_rating,
-        loss_defensive_rating,
-        loss_defensive_rebounds,
-        loss_steals,
-        loss_blocked_shots,
-        loss_personal_fouls
-    )
-
-    teamPointsScored = round(predict(model, dfpt))
-
-    # Create data frame for opponent score prediction.
-    # Switch conferences
-    x = loss_conference
-    loss_conference = win_conference
-    win_conference = x
-
-    # Switch possessions
-    x = loss_possessions
-    loss_possessions = win_possessions
-    win_possessions = x
-
-    # Switch offensive ratings
-    x = loss_offensive_rating
-    loss_offensive_rating = win_offensive_rating
-    win_offensive_rating = x
-
-    # Switch defensive ratings
-    x = loss_defensive_rating
-    loss_defensive_rating = win_defensive_rating
-    win_defensive_rating= x
-
-    win_personal_fouls = sample(min(opponentPersonalFouls):max(opponentPersonalFouls), nScenarios, replace=TRUE)
-
-    loss_defensive_rebounds = runif(nScenarios, min(teamDefensiveRebounds), max(teamDefensiveRebounds))
-    loss_steals = sample(min(teamSteals):max(teamSteals), nScenarios, replace=TRUE)
-    loss_blocked_shots = sample(min(teamBlockedShots):max(teamBlockedShots), nScenarios, replace=TRUE)
-    loss_personal_fouls = sample(min(teamPersonalFouls):max(teamPersonalFouls), nScenarios, replace=TRUE)
-
-    dfpo = cbind.data.frame(
-        win_conference,
-        win_possessions,
-        win_offensive_rating,
-        win_defensive_rating,
-        win_personal_fouls,
-        loss_conference,
-        loss_possessions,
-        loss_offensive_rating,
-        loss_defensive_rating,
-        loss_defensive_rebounds,
-        loss_steals,
-        loss_blocked_shots,
-        loss_personal_fouls
-    )
-
-    # Predict opponent points scored.
-    opponentPointsScored = round(predict(model, dfpo))
-
-    # Make a dataframe of points scored.  Not sure why...
-    pointsScored = cbind.data.frame(teamPointsScored, opponentPointsScored)
-
-    # Produce/report a result message.
-    teamWins = pointsScored$teamPointsScored > pointsScored$opponentPointsScored
-    msg = sprintf("%d scenarios of %s versus %s:", nScenarios, teamName, opponentName)
-    print(msg)
-    nTeamWins = length(which(teamWins == TRUE))
-    nOpponentWins = nScenarios - nTeamWins
-	margin = numeric(nScenarios)
-	xlabel = ''
-	ylabel = 'Simulated margin of victory'
-	x = seq(1:nScenarios)
-    if (nTeamWins > nOpponentWins) {
-		margin = sort(pointsScored$teamPointsScored - pointsScored$opponentPointsScored)
-		xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", teamName, nTeamWins, mean(margin))
-    } else {
-		margin = sort(pointsScored$opponentPointsScored - pointsScored$teamPointsScored)
-		xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", opponentName, nOpponentWins, mean(margin))
-    }
-	plot(x, margin, main=msg, xlab=xlabel, ylab=ylabel, pch=6)
-	abline(h=0)
-	abline(v=(nScenarios/2))
-    print(xlabel)
-	
-	#return(pointsScored)
+  teamConference = getTeamConference(df, teamName)
+  teamPossessions = getPossessions(df, teamName)
+  teamOffensiveRatings = getOffensiveRatings(df, teamName)
+  teamDefensiveRatings = getDefensiveRatings(df, teamName)
+  teamDefensiveRebounds  = getDefensiveRebounds(df, teamName)
+  teamSteals = getSteals(df, teamName)
+  teamPersonalFouls = getPersonalFouls(df, teamName)
+  teamBlockedShots = getBlockedShots(df, teamName)
+  
+  opponentConference = getTeamConference(df, opponentName)
+  opponentPossessions = getPossessions(df, opponentName)
+  opponentOffensiveRatings = getOffensiveRatings(df, opponentName)
+  opponentDefensiveRatings = getDefensiveRatings(df, opponentName)
+  opponentDefensiveRebounds  = getDefensiveRebounds(df, opponentName)
+  opponentSteals = getSteals(df, opponentName)
+  opponentPersonalFouls = getPersonalFouls(df, opponentName)
+  opponentBlockedShots = getBlockedShots(df, opponentName)
+  
+  win_conference = rep(teamConference, nScenarios)
+  win_possessions = sample(min(teamPossessions):max(teamPossessions), nScenarios, replace=TRUE)
+  win_offensive_rating = runif(nScenarios, min(teamOffensiveRatings ), max( teamOffensiveRatings ))
+  win_defensive_rating = runif(nScenarios, min(teamDefensiveRatings), max(teamDefensiveRatings))
+  win_personal_fouls = sample(min(teamPersonalFouls):max(teamPersonalFouls), nScenarios, replace=TRUE)
+  loss_conference = rep(opponentConference, nScenarios)
+  loss_possessions = sample(min(opponentPossessions):max(opponentPossessions), nScenarios, replace=TRUE)
+  loss_offensive_rating = runif(nScenarios, min(opponentOffensiveRatings), max(opponentOffensiveRatings))
+  loss_defensive_rating = runif(nScenarios, min(opponentDefensiveRatings), max(opponentDefensiveRatings))
+  loss_defensive_rebounds = runif(nScenarios, min(opponentDefensiveRebounds), max(opponentDefensiveRebounds))
+  loss_steals = sample(min(opponentSteals):max(opponentSteals), nScenarios, replace=TRUE)
+  loss_blocked_shots = sample(min(opponentBlockedShots):max(opponentBlockedShots), nScenarios, replace=TRUE)
+  loss_personal_fouls = sample(min(opponentPersonalFouls):max(opponentPersonalFouls), nScenarios, replace=TRUE)
+  
+  # Create data frame for team score prediction.
+  dfpt = cbind.data.frame(
+    win_conference,
+    win_possessions,
+    win_offensive_rating,
+    win_defensive_rating,
+    win_personal_fouls,
+    loss_conference,
+    loss_possessions,
+    loss_offensive_rating,
+    loss_defensive_rating,
+    loss_defensive_rebounds,
+    loss_steals,
+    loss_blocked_shots,
+    loss_personal_fouls
+  )
+  
+  teamPointsScored = round(predict(model, dfpt))
+  
+  # Create data frame for opponent score prediction.
+  # Switch conferences
+  x = loss_conference
+  loss_conference = win_conference
+  win_conference = x
+  
+  # Switch possessions
+  x = loss_possessions
+  loss_possessions = win_possessions
+  win_possessions = x
+  
+  # Switch offensive ratings
+  x = loss_offensive_rating
+  loss_offensive_rating = win_offensive_rating
+  win_offensive_rating = x
+  
+  # Switch defensive ratings
+  x = loss_defensive_rating
+  loss_defensive_rating = win_defensive_rating
+  win_defensive_rating= x
+  
+  win_personal_fouls = sample(min(opponentPersonalFouls):max(opponentPersonalFouls), nScenarios, replace=TRUE)
+  
+  loss_defensive_rebounds = runif(nScenarios, min(teamDefensiveRebounds), max(teamDefensiveRebounds))
+  loss_steals = sample(min(teamSteals):max(teamSteals), nScenarios, replace=TRUE)
+  loss_blocked_shots = sample(min(teamBlockedShots):max(teamBlockedShots), nScenarios, replace=TRUE)
+  loss_personal_fouls = sample(min(teamPersonalFouls):max(teamPersonalFouls), nScenarios, replace=TRUE)
+  
+  dfpo = cbind.data.frame(
+    win_conference,
+    win_possessions,
+    win_offensive_rating,
+    win_defensive_rating,
+    win_personal_fouls,
+    loss_conference,
+    loss_possessions,
+    loss_offensive_rating,
+    loss_defensive_rating,
+    loss_defensive_rebounds,
+    loss_steals,
+    loss_blocked_shots,
+    loss_personal_fouls
+  )
+  
+  # Predict opponent points scored.
+  opponentPointsScored = round(predict(model, dfpo))
+  
+  # Make a dataframe of points scored.  Not sure why...
+  pointsScored = cbind.data.frame(teamPointsScored, opponentPointsScored)
+  
+  # Produce/report a result message.
+  teamWins = pointsScored$teamPointsScored > pointsScored$opponentPointsScored
+  msg = sprintf("%d scenarios of %s versus %s:", nScenarios, teamName, opponentName)
+  print(msg)
+  nTeamWins = length(which(teamWins == TRUE))
+  nOpponentWins = nScenarios - nTeamWins
+  margin = numeric(nScenarios)
+  xlabel = ''
+  ylabel = ''
+  x = seq(1:nScenarios)
+  if (nTeamWins > nOpponentWins) {
+    margin = sort(pointsScored$teamPointsScored - pointsScored$opponentPointsScored)
+    xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", teamName, nTeamWins, mean(margin))
+  } else {
+    margin = sort(pointsScored$opponentPointsScored - pointsScored$teamPointsScored)
+    xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", opponentName, nOpponentWins, mean(margin))
+  }
+  uniqueMargin = unique(margin)
+  marginCount = numeric(length(uniqueMargin))
+  normMarginCount = numeric(length(uniqueMargin))
+  for (i in 1:length(uniqueMargin)) {
+    marginCount[i] = length(which(margin == uniqueMargin[i]))
+    normMarginCount[i] = marginCount[i] / nScenarios
+  }
+  
+  plot(uniqueMargin, normMarginCount, main=msg, xlab=xlabel, ylab=ylabel, pch=16)
+  abline(v=(mean(margin)))
+  print(xlabel)
+  
+  #return(pointsScored)
 }
 #predictWinner('villanova-wildcats', 'seton-hall-pirates', df, model)
 #predictWinner('villanova-wildcats', 'st-johns-red-storm', df, model)
