@@ -431,6 +431,7 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 	points(other_loss_rows, dfprime$loss_defensive_rating[other_loss_rows], col='red', pch=4)
 }
 
+
 # Bracket couples:
 # 1-16
 # 8-9
@@ -440,12 +441,26 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 # 3-14
 # 7-10
 # 2-15
-# Top 16 tournament 2015-01-26.
-# predictWinner('kentucky-wildcats', 'maryland-terrapins', df, model)
-# predictWinner('notre-dame-fighting-irish', 'kansas-jayhawks', df, model)
-# predictWinner('wisconsin-badgers', 'wichita-state-shockers', df, model)
-# predictWinner('duke-blue-devils', 'north-carolina-tar-heels', df, model)
-# predictWinner('arizona-wildcats', 'utah-runnin-utes', df, model)
-# predictWinner('gonzaga-bulldogs', 'vcu-rams', df, model)
-# predictWinner('villanova-wildcats', 'louisville-cardinals', df, model)
-# predictWinner('iowa-state-cyclones', 'virginia-cavaliers', df, model)
+# Top 16 tournament 2015-02-03.
+# predictWinner('kentucky-wildcats', 'wichita-state-shockers', df, model)
+# predictWinner('kansas-jayhawks', 'louisville-cardinals', df, model)
+# predictWinner('wisconsin-badgers', 'north-carolina-tar-heels', df, model)
+# predictWinner('duke-blue-devils', 'utah-runnin-utes', df, model)
+# predictWinner('arizona-wildcats', 'iowa-state-cyclones', df, model)
+# predictWinner('virginia-cavaliers', 'uni-panthers', df, model)
+# predictWinner('villanova-wildcats', 'notre-dame-fighting-irish', df, model)
+# predictWinner('gonzaga-bulldogs', 'west-virginia-mountaineers', df, model)
+
+# predictWinner('kentucky-wildcats', 'louisville-cardinals', df, model)
+# predictWinner('wisconsin-badgers', 'duke-blue-devils', df, model)
+# predictWinner('arizona-wildcats', 'virginia-cavaliers', df, model)
+# predictWinner('gonzaga-bulldogs', 'notre-dame-fighting-irish', df, model)
+
+# predictWinner('kentucky-wildcats', 'duke-blue-devils', df, model)
+# predictWinner('notre-dame-fighting-irish', 'virginia-cavaliers', df, model)
+
+# predictWinner('notre-dame-fighting-irish', 'duke-blue-devils', df, model)
+# Duke wins...
+
+
+
