@@ -226,19 +226,25 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
   xlabel = ''
   ylabel = ''
   x = seq(1:nScenarios)
+  win_team_name = ''
+  scenarios_won = 0
   if (nTeamWins > nOpponentWins) {
     margin = sort(pointsScored$teamPointsScored - pointsScored$opponentPointsScored)
-    xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", teamName, nTeamWins, mean(margin))
+    
+    win_team_name = teamName
+    scenarios_won = nTeamWins
   } else {
     margin = sort(pointsScored$opponentPointsScored - pointsScored$teamPointsScored)
-    xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f.", opponentName, nOpponentWins, mean(margin))
+    win_team_name = opponentName
+    scenarios_won = nOpponentWins
   }
-  
   
   margin.min = min(margin)
   margin.max = max(margin)
   margin.mean = mean(margin)
   margin.sd = sd(margin)
+  xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f, sd = %5.2f.", win_team_name, scenarios_won, margin.mean, margin.sd)
+  
   x = seq(margin.min, margin.max, length=1000)
   y = dnorm(x, mean=margin.mean, sd=margin.sd)
   plot(x, y, main=msg, xlab=xlabel, ylab=ylabel, type="l")
