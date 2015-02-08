@@ -223,7 +223,7 @@ class TeamConference:
             'ohio-state-buckeyes' : 'Big Ten',
             'oklahoma-sooners' : 'Big 12',
             'oklahoma-state-cowboys' : 'Big 12',
-            'old-dominion-monarchs' : 'Conference USAConference USA',
+            'old-dominion-monarchs' : 'Conference USA',
             'ole-miss-rebels' : 'Southeastern',
             'omaha-mavericks' : 'Summit',
             'oral-roberts-golden-eagles' : 'Southland',
