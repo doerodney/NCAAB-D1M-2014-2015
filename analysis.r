@@ -253,7 +253,7 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
 
   print(xlabel)
   
-  #return(pointsScored)
+  return(win_team_name)
 }
 #predictWinner('villanova-wildcats', 'seton-hall-pirates', df, model)
 #predictWinner('villanova-wildcats', 'st-johns-red-storm', df, model)
@@ -313,7 +313,7 @@ getHomeCourtAdvantage <- function( team_name, df) {
 
 plotHomeCourtAdvantage <- function( team_name, df) {
 	df_team = getHomeAwayMarginOfVictory(team_name, df)
-	alist = getHomeCountAdvantage(team_name, df)
+	alist = getHomeCourtAdvantage(team_name, df)
 	home_court_advantage = alist$home_court_advantage
 	probability = as.integer(alist$probability)
 	
@@ -468,5 +468,10 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 # predictWinner('notre-dame-fighting-irish', 'duke-blue-devils', df, model)
 # Duke wins...
 
+predictWinner('cal-poly-mustangs', 'hawaii-rainbow-warriors', df, model)
 
+predictWinner('uc-davis-aggies', 'uc-irvine-anteaters', df, model)
 
+predictWinner('csun-matadors', 'cal-state-fullerton-titans', df, model)
+
+predictWinner('uc-riverside-highlanders', 'long-beach-state-49ers', df, model)
