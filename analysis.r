@@ -255,6 +255,49 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
   
   return(win_team_name)
 }
+
+
+predictBracketWinner<-function(team_list, df, model)
+{
+  winner = ''
+  
+  # Preallocate vectors for subsequent rounds.
+  quarter_finalist = character(8)
+  semi_finalist = character(4)
+  finalist = character(2)
+  
+  if (length(team_list == 16)) {
+    print("Round of 16:")
+    quarter_finalist[1] = predictWinner(team_list[1], team_list[16], df, model) 
+    quarter_finalist[2] = predictWinner(team_list[8], team_list[9], df, model)
+    quarter_finalist[3] = predictWinner(team_list[5], team_list[12], df, model)
+    quarter_finalist[4] = predictWinner(team_list[4], team_list[13], df, model)
+    quarter_finalist[5] = predictWinner(team_list[6], team_list[11], df, model)
+    quarter_finalist[6] = predictWinner(team_list[3], team_list[14], df, model)
+    quarter_finalist[7] = predictWinner(team_list[7], team_list[10], df, model)
+    quarter_finalist[8] = predictWinner(team_list[2], team_list[15], df, model)
+    
+    print("Quarter finals:")
+    semi_finalist[1] = predictWinner(quarter_finalist[1], quarter_finalist[2], df, model)
+    semi_finalist[2] = predictWinner(quarter_finalist[3], quarter_finalist[4], df, model)
+    semi_finalist[3] = predictWinner(quarter_finalist[5], quarter_finalist[6], df, model)
+    semi_finalist[4] = predictWinner(quarter_finalist[7], quarter_finalist[8], df, model)
+    
+    print("Semi finals:")
+    finalist[1] = predictWinner(semi_finalist[1], semi_finalist[2], df, model)
+    finalist[2] = predictWinner(semi_finalist[3], semi_finalist[4], df, model)
+    
+    print("Final:")
+    winner = predictWinner(finalist[1], finalist[2], df, model)
+  }
+  else {
+    winner = sprintf("The team list needs 16 teams.  The supplied list has %d.", length(team_list))
+  }
+  
+  return(winner)
+}  
+
+
 #predictWinner('villanova-wildcats', 'seton-hall-pirates', df, model)
 #predictWinner('villanova-wildcats', 'st-johns-red-storm', df, model)
 #predictWinner('villanova-wildcats', 'depaul-blue-demons', df, model)
@@ -448,6 +491,28 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 # 7-10
 # 2-15
 # Top 16 tournament 2015-02-03.
+Kentucky (65)
+2.Virginia
+3.Gonzaga
+4.Duke
+5.Wisconsin
+6.Villanova
+7.Arizona
+8.Kansas
+9.Louisville
+10.Notre Dame
+11.Utah
+12.N. Carolina
+13.Northern Iowa
+14.Iowa St.
+15.Wichita St.
+16.Baylor
+
+team_list = c('kentucky-wildcats', 'virginia-cavaliers', 'gonzaga-bulldogs', 'duke-blue-devils',
+'wisconsin-badgers', 'villanova-wildcats', 'arizona-wildcats', 'kansas-jayhawks',
+'louisville-cardinals', 'notre-dame-fighting-irish', 'utah-runnin-utes', 'north-carolina-tar-heels',
+'uni-panthers', 'iowa-hawkeyes', 'wichita-state-shockers', 'baylor-bears')
+
 # predictWinner('kentucky-wildcats', 'wichita-state-shockers', df, model)
 # predictWinner('kansas-jayhawks', 'louisville-cardinals', df, model)
 # predictWinner('wisconsin-badgers', 'north-carolina-tar-heels', df, model)
@@ -475,3 +540,5 @@ predictWinner('uc-davis-aggies', 'uc-irvine-anteaters', df, model)
 predictWinner('csun-matadors', 'cal-state-fullerton-titans', df, model)
 
 predictWinner('uc-riverside-highlanders', 'long-beach-state-49ers', df, model)
+
+predictWinner('csun-matadors', 'cal-poly-mustangs', df, model, 100000)
