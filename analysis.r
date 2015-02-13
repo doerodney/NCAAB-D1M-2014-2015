@@ -7,28 +7,6 @@ summary(df)
 # margin of victory
 # df$mov = df$win_points_scored - df$loss_points_scored
 
-pythagorean_expectation <- function(scored, allowed, n) {
-	py_ex = scored^n / (scored^n + allowed^n)
-	return(py_ex)
-}
-
-pythagorean_expectation_root<-function(x, points_scored, points_allowed, win_fraction) {
-	result = points_scored^x / (points_scored^x + points_allowed^x) - win_fraction
-	return(result)
-}
-
-get_pythogorean_expectation_exponent<-function(points_scored, points_allowed, win_fraction) {
-	n = uniroot(pythagorean_expectation_root, c(0.1, 
-	100.0), points_scored = 1000, points_allowed = 800, win_fraction = 0.8)
-	return(n)
-}
-
-# remove low contributors
-plotFit <- function(yObserved, yFitted, intercept=0) {
-  plot(yObserved, yFitted, xlab="Actual", ylab="Predicted")
-  abline(intercept, 1, lty=2, col=rgb(1,0,0))
-}
-
 model = lm(win_points_scored ~
 	win_conference + 
 	win_possessions + 
@@ -44,6 +22,28 @@ model = lm(win_points_scored ~
 	loss_blocked_shots + 
 	loss_personal_fouls,
 	data=df)
+
+pythagorean_expectation <- function(scored, allowed, n) {
+  py_ex = scored^n / (scored^n + allowed^n)
+  return(py_ex)
+}
+
+pythagorean_expectation_root<-function(x, points_scored, points_allowed, win_fraction) {
+  result = points_scored^x / (points_scored^x + points_allowed^x) - win_fraction
+  return(result)
+}
+
+get_pythogorean_expectation_exponent<-function(points_scored, points_allowed, win_fraction) {
+  n = uniroot(pythagorean_expectation_root, c(0.1, 
+                                              100.0), points_scored = 1000, points_allowed = 800, win_fraction = 0.8)
+  return(n)
+}
+
+# remove low contributors
+plotFit <- function(yObserved, yFitted, intercept=0) {
+  plot(yObserved, yFitted, xlab="Actual", ylab="Predicted")
+  abline(intercept, 1, lty=2, col=rgb(1,0,0))
+}
 
 plotFit(df$win_points_scored, fitted(model))
 
@@ -490,55 +490,11 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 # 3-14
 # 7-10
 # 2-15
-# Top 16 tournament 2015-02-03.
-Kentucky (65)
-2.Virginia
-3.Gonzaga
-4.Duke
-5.Wisconsin
-6.Villanova
-7.Arizona
-8.Kansas
-9.Louisville
-10.Notre Dame
-11.Utah
-12.N. Carolina
-13.Northern Iowa
-14.Iowa St.
-15.Wichita St.
-16.Baylor
 
-team_list = c('kentucky-wildcats', 'virginia-cavaliers', 'gonzaga-bulldogs', 'duke-blue-devils',
+#team_list = c('kentucky-wildcats', 'virginia-cavaliers', 'gonzaga-bulldogs', 'duke-blue-devils',
 'wisconsin-badgers', 'villanova-wildcats', 'arizona-wildcats', 'kansas-jayhawks',
 'louisville-cardinals', 'notre-dame-fighting-irish', 'utah-runnin-utes', 'north-carolina-tar-heels',
 'uni-panthers', 'iowa-hawkeyes', 'wichita-state-shockers', 'baylor-bears')
 
-# predictWinner('kentucky-wildcats', 'wichita-state-shockers', df, model)
-# predictWinner('kansas-jayhawks', 'louisville-cardinals', df, model)
-# predictWinner('wisconsin-badgers', 'north-carolina-tar-heels', df, model)
-# predictWinner('duke-blue-devils', 'utah-runnin-utes', df, model)
-# predictWinner('arizona-wildcats', 'iowa-state-cyclones', df, model)
-# predictWinner('virginia-cavaliers', 'uni-panthers', df, model)
-# predictWinner('villanova-wildcats', 'notre-dame-fighting-irish', df, model)
-# predictWinner('gonzaga-bulldogs', 'west-virginia-mountaineers', df, model)
+#predictBracketWinner(team_list, df, model)
 
-# predictWinner('kentucky-wildcats', 'louisville-cardinals', df, model)
-# predictWinner('wisconsin-badgers', 'duke-blue-devils', df, model)
-# predictWinner('arizona-wildcats', 'virginia-cavaliers', df, model)
-# predictWinner('gonzaga-bulldogs', 'notre-dame-fighting-irish', df, model)
-
-# predictWinner('kentucky-wildcats', 'duke-blue-devils', df, model)
-# predictWinner('notre-dame-fighting-irish', 'virginia-cavaliers', df, model)
-
-# predictWinner('notre-dame-fighting-irish', 'duke-blue-devils', df, model)
-# Duke wins...
-
-predictWinner('cal-poly-mustangs', 'hawaii-rainbow-warriors', df, model)
-
-predictWinner('uc-davis-aggies', 'uc-irvine-anteaters', df, model)
-
-predictWinner('csun-matadors', 'cal-state-fullerton-titans', df, model)
-
-predictWinner('uc-riverside-highlanders', 'long-beach-state-49ers', df, model)
-
-predictWinner('csun-matadors', 'cal-poly-mustangs', df, model, 100000)
