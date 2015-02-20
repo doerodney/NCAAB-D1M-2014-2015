@@ -316,6 +316,39 @@ predictBracketWinner<-function(team_list, df, model)
 #predictWinner('villanova-wildcats', 'xavier-musketeers', df, model)
 #predictWinner('villanova-wildcats', 'st-johns-red-storm', df, model)
 
+predictBigWestWinner<-function(team_list, df, model)
+{
+  winner = ''
+  
+  # Preallocate vectors for subsequent rounds.
+  semi_finalist = character(4)
+  finalist = character(2)
+  
+  if (length(team_list) == 9) {
+    team_list[8] = predictWinner(team_list[8], team_list[9], df, model)
+    
+    print("Quarter finals:")
+    semi_finalist[1] = predictWinner(team_list[1], team_list[8], df, model) 
+    semi_finalist[2] = predictWinner(team_list[4], team_list[5], df, model)
+    semi_finalist[3] = predictWinner(team_list[3], team_list[6], df, model)
+    semi_finalist[4] = predictWinner(team_list[2], team_list[7], df, model)
+    
+    print("Semi finals:")
+    finalist[1] = predictWinner(semi_finalist[1], semi_finalist[2], df, model)
+    finalist[2] = predictWinner(semi_finalist[3], semi_finalist[4], df, model)
+    
+    print("Final:")
+    winner = predictWinner(finalist[1], finalist[2], df, model)
+  }
+  else {
+    winner = sprintf("The team list needs 9 teams.  The supplied list has %d.", length(team_list))
+  }
+  
+  return(winner)
+}  
+
+#team_list = c('uc-davis-aggies','uc-irvine-anteaters','long-beach-state-49ers','uc-santa-barbara-gauchos','hawaii-rainbow-warriors','cal-poly-mustangs','uc-riverside-highlanders','csun-matadors','cal-state-fullerton-titans' )
+
 
 getHomeAwayMarginOfVictory<- function( team_name, df) {
     # Determine indexes that involve team.

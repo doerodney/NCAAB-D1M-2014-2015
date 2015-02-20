@@ -33,15 +33,29 @@ class TeamGame:
         self.__points_allowed = 0
 
     def get_common_report_string(self):
+        # Prevent division by zero.
+        free_throw_fraction = 0.0
+        field_goal_fraction = 0.0
+        three_point_fraction = 0.0
+
+        if self.free_throws_attempted > 0:
+            free_throw_fraction = float(self.free_throws_made) / float(self.free_throws_attempted)
+
+        if self.field_goals_attempted > 0:
+            field_goal_fraction = float(self.field_goals_made) / float(self.field_goals_attempted)
+
+        if self.three_pointers_attempted > 0:
+            three_point_fraction = float(self.three_pointers_made) / float(self.three_pointers_attempted)
+
         common_report_string = '"%s","%s",%3.0f,%s,%6.2f,%6.2f,%4.2f,%4.2f,%4.2f,%s,%s,%s,%s,%s' % \
                                (self.team, self.conference,
                                 self.possessions,
                                 str(self.points_scored),
                                 self.__offensive_rating,
                                 self.__defensive_rating,
-                                float(self.field_goals_made) / float(self.field_goals_attempted),
-                                float(self.three_pointers_made) / float(self.three_pointers_attempted),
-                                float(self.free_throws_made) / float(self.free_throws_attempted),
+                                field_goal_fraction,
+                                three_point_fraction,
+                                free_throw_fraction,
                                 str(self.offensive_rebounds),
                                 str(self.defensive_rebounds),
                                 str(self.steals),

@@ -3,6 +3,7 @@ import game_url
 import team_game
 import team_conference
 import team_home_court
+import time
 import xml.etree.ElementTree
 from optparse import OptionParser
 import urllib
@@ -444,7 +445,7 @@ def main():
     print 'Acquiring data for ', datestamp
 
     data_url_list = get_data_url_list(datestamp)
-    #data_url_list = ['http://sports.yahoo.com/ncaab/gonzaga-bulldogs-san-diego-toreros-201412290497']
+    #data_url_list = ['http://sports.yahoo.com/ncaab/cal-state-fullerton-titans-hawaii-rainbow-warriors-201502140246']
     #                 'http://sports.yahoo.com/ncaab/lipscomb-bisons-chattanooga-mocs-201412290581']
     #                 'http://sports.yahoo.com/ncaab/temple-owls-villanova-wildcats-201412140617']
 
@@ -452,8 +453,14 @@ def main():
     csv_header = get_csv_report_header()
     date_result_list.append(csv_header)
 
+    print 'There are %s URLs to process.' % str(len(data_url_list))
+
+    processed_count = 0
+
     for url in data_url_list:
+        processed_count += 1
         if is_division_one_game(url):
+
             # Get a game summary for the winner and the loser.
             summary_list = get_box_score_content(url)
             if len(summary_list) == 2:
@@ -462,14 +469,14 @@ def main():
                 loser = summary_list[0]
 
                 # Correct assumption as necessary.
-                if (summary_list[0].points_scored > summary_list[1].points_scored):
+                if summary_list[0].points_scored > summary_list[1].points_scored:
                     winner = summary_list[0]
                     loser = summary_list[1]
 
                 # Generate a report string.
                 row_text = generate_summary_row(winner, loser)
                 date_result_list.append(row_text)
-                print row_text
+                print '(%s/%s)  %s' % (str(processed_count), str(len(data_url_list)),  row_text)
 
     if len(date_result_list) > 1:
         result_file_name = 'Results-%s.csv' % (datestamp)
