@@ -526,8 +526,8 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 
 #team_list = c('kentucky-wildcats', 'virginia-cavaliers', 'gonzaga-bulldogs', 'duke-blue-devils',
 'wisconsin-badgers', 'villanova-wildcats', 'arizona-wildcats', 'kansas-jayhawks',
-'utah-runnin-utes', 'notre-dame-fighting-irish',  'uni-panthers', 'louisville-cardinals',
-'wichita-state-shockers', 'iowa-state-cyclones', 'north-carolina-tar-heels', 'maryland-terrapins')
+'notre-dame-fighting-irish', 'uni-panthers', 'wichita-state-shockers', 'iowa-state-cyclones', 
+'utah-runnin-utes', 'maryland-terrapins', 'north-carolina-tar-heels', 'oklahoma-sooners')
 
 #predictBracketWinner(team_list, df, model)
 
