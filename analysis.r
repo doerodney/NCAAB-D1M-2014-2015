@@ -347,7 +347,7 @@ predictBigWestWinner<-function(team_list, df, model)
   return(winner)
 }  
 
-#team_list = c('uc-davis-aggies','uc-irvine-anteaters','long-beach-state-49ers','uc-santa-barbara-gauchos','hawaii-rainbow-warriors','cal-poly-mustangs','uc-riverside-highlanders','csun-matadors','cal-state-fullerton-titans' )
+#team_list = c('uc-davis-aggies','uc-irvine-anteaters','uc-santa-barbara-gauchos','long-beach-state-49ers','uc-riverside-highlanders','hawaii-rainbow-warriors','cal-poly-mustangs','csun-matadors','cal-state-fullerton-titans' )
 
 
 getHomeAwayMarginOfVictory<- function( team_name, df) {
