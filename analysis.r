@@ -531,3 +531,40 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 
 #predictBracketWinner(team_list, df, model)
 
+test_predictions<-function(game_date, data_date, df) 
+{
+   dfprime = df[which(df$date <= data_date), ]
+   mprime = lm(win_points_scored ~
+                 win_conference + 
+                 win_possessions + 
+                 win_offensive_rating + 
+                 win_defensive_rating + 
+                 win_personal_fouls + 
+                 loss_conference + 
+                 loss_possessions + 
+                 loss_offensive_rating + 
+                 loss_defensive_rating + 
+                 loss_defensive_rebounds + 
+                 loss_steals + 
+                 loss_blocked_shots + 
+                 loss_personal_fouls,
+                 data=dfprime)
+   win_team_list = df$win_team[which(df$date == game_date)]
+   loss_team_list = df$loss_team[which(df$date == game_date)]
+   
+   game_count = length(win_team_list)
+   
+   correct_count = 0
+   for (i in 1:game_count) {
+     win_team = as.character(win_team_list[i])
+     loss_team = as.character(loss_team_list[i])
+     predicted_win_team = predictWinner(win_team, loss_team, dfprime, mprime)
+     if (predicted_win_team == win_team) {
+       correct_count = correct_count + 1
+     }
+   }
+   
+   sprintf("%d correct out of %d for %d using data from %d.", 
+           correct_count, game_count, game_date, data_date)
+}
+
