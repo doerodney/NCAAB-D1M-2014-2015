@@ -257,7 +257,7 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
 }
 
 
-predictBracketWinner<-function(team_list, df, model)
+predictBracketWinner<-function(team_list, df, model, nScenarios=10000)
 {
   winner = ''
   
@@ -267,28 +267,32 @@ predictBracketWinner<-function(team_list, df, model)
   finalist = character(2)
   
   if (length(team_list == 16)) {
+    print(" ")
     print("Round of 16:")
-    quarter_finalist[1] = predictWinner(team_list[1], team_list[16], df, model) 
-    quarter_finalist[2] = predictWinner(team_list[8], team_list[9], df, model)
-    quarter_finalist[3] = predictWinner(team_list[5], team_list[12], df, model)
-    quarter_finalist[4] = predictWinner(team_list[4], team_list[13], df, model)
-    quarter_finalist[5] = predictWinner(team_list[6], team_list[11], df, model)
-    quarter_finalist[6] = predictWinner(team_list[3], team_list[14], df, model)
-    quarter_finalist[7] = predictWinner(team_list[7], team_list[10], df, model)
-    quarter_finalist[8] = predictWinner(team_list[2], team_list[15], df, model)
+    quarter_finalist[1] = predictWinner(team_list[1], team_list[16], df, model, nScenarios) 
+    quarter_finalist[2] = predictWinner(team_list[8], team_list[9], df, model, nScenarios)
+    quarter_finalist[3] = predictWinner(team_list[5], team_list[12], df, model, nScenarios)
+    quarter_finalist[4] = predictWinner(team_list[4], team_list[13], df, model, nScenarios)
+    quarter_finalist[5] = predictWinner(team_list[6], team_list[11], df, model, nScenarios)
+    quarter_finalist[6] = predictWinner(team_list[3], team_list[14], df, model, nScenarios)
+    quarter_finalist[7] = predictWinner(team_list[7], team_list[10], df, model, nScenarios)
+    quarter_finalist[8] = predictWinner(team_list[2], team_list[15], df, model, nScenarios)
     
-    print("Quarter finals:")
-    semi_finalist[1] = predictWinner(quarter_finalist[1], quarter_finalist[2], df, model)
-    semi_finalist[2] = predictWinner(quarter_finalist[3], quarter_finalist[4], df, model)
-    semi_finalist[3] = predictWinner(quarter_finalist[5], quarter_finalist[6], df, model)
-    semi_finalist[4] = predictWinner(quarter_finalist[7], quarter_finalist[8], df, model)
+    print(" ")
+    print("Quarter-finals:")
+    semi_finalist[1] = predictWinner(quarter_finalist[1], quarter_finalist[2], df, model, nScenarios)
+    semi_finalist[2] = predictWinner(quarter_finalist[3], quarter_finalist[4], df, model, nScenarios)
+    semi_finalist[3] = predictWinner(quarter_finalist[5], quarter_finalist[6], df, model, nScenarios)
+    semi_finalist[4] = predictWinner(quarter_finalist[7], quarter_finalist[8], df, model, nScenarios)
     
-    print("Semi finals:")
-    finalist[1] = predictWinner(semi_finalist[1], semi_finalist[2], df, model)
-    finalist[2] = predictWinner(semi_finalist[3], semi_finalist[4], df, model)
+    print(" ")
+    print("Semi-finals:")
+    finalist[1] = predictWinner(semi_finalist[1], semi_finalist[2], df, model, nScenarios)
+    finalist[2] = predictWinner(semi_finalist[3], semi_finalist[4], df, model, nScenarios)
     
+    print(" ")
     print("Final:")
-    winner = predictWinner(finalist[1], finalist[2], df, model)
+    winner = predictWinner(finalist[1], finalist[2], df, model, nScenarios)
   }
   else {
     winner = sprintf("The team list needs 16 teams.  The supplied list has %d.", length(team_list))
@@ -347,7 +351,7 @@ predictBigWestWinner<-function(team_list, df, model)
   return(winner)
 }  
 
-#team_list = c('uc-davis-aggies','uc-irvine-anteaters','uc-santa-barbara-gauchos','long-beach-state-49ers','uc-riverside-highlanders','hawaii-rainbow-warriors','cal-poly-mustangs','csun-matadors','cal-state-fullerton-titans' )
+#team_list = c('uc-davis-aggies','uc-irvine-anteaters','uc-santa-barbara-gauchos','long-beach-state-49ers','hawaii-rainbow-warriors','uc-riverside-highlanders','cal-poly-mustangs','csun-matadors','cal-state-fullerton-titans' )
 
 
 getHomeAwayMarginOfVictory<- function( team_name, df) {
@@ -524,10 +528,10 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 # 7-10
 # 2-15
 
-#team_list = c('kentucky-wildcats', 'virginia-cavaliers', 'gonzaga-bulldogs', 'duke-blue-devils',
-'wisconsin-badgers', 'villanova-wildcats', 'arizona-wildcats', 'kansas-jayhawks',
-'notre-dame-fighting-irish', 'uni-panthers', 'wichita-state-shockers', 'iowa-state-cyclones', 
-'utah-runnin-utes', 'maryland-terrapins', 'north-carolina-tar-heels', 'oklahoma-sooners')
+#team_list = c('kentucky-wildcats', 'virginia-cavaliers',  'duke-blue-devils', 'villanova-wildcats',
+'arizona-wildcats', 'wisconsin-badgers', 'gonzaga-bulldogs', 'wichita-state-shockers', 
+'kansas-jayhawks', 'maryland-terrapins', 'uni-panthers', 'notre-dame-fighting-irish', 
+'utah-runnin-utes', 'baylor-bears', 'oklahoma-sooners', 'louisville-cardinals')
 
 #predictBracketWinner(team_list, df, model)
 
