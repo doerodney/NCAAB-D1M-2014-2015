@@ -301,24 +301,7 @@ predictBracketWinner<-function(team_list, df, model, nScenarios=10000)
   return(winner)
 }  
 
-
-#predictWinner('villanova-wildcats', 'seton-hall-pirates', df, model)
-#predictWinner('villanova-wildcats', 'st-johns-red-storm', df, model)
-#predictWinner('villanova-wildcats', 'depaul-blue-demons', df, model)
-#predictWinner('villanova-wildcats', 'xavier-musketeers', df, model)
-#predictWinner('villanova-wildcats', 'penn-quakers', df, model)
-#predictWinner('villanova-wildcats', 'georgetown-hoyas', df, model)
-#predictWinner('villanova-wildcats', 'creighton-bluejays', df, model)
-#predictWinner('villanova-wildcats', 'depaul-blue-demons', df, model)
-#predictWinner('villanova-wildcats', 'marquette-golden-eagles', df, model)
-#predictWinner('villanova-wildcats', 'georgetown-hoyas', df, model)
-#predictWinner('villanova-wildcats', 'providence-friars', df, model)
-#predictWinner('villanova-wildcats', 'butler-bulldogs', df, model)
-#predictWinner('villanova-wildcats', 'seton-hall-pirates', df, model)
-#predictWinner('villanova-wildcats', 'marquette-golden-eagles', df, model)
-#predictWinner('villanova-wildcats', 'providence-friars', df, model)
-#predictWinner('villanova-wildcats', 'xavier-musketeers', df, model)
-#predictWinner('villanova-wildcats', 'st-johns-red-storm', df, model)
+#---Run from top down to here.--------------------------------
 
 predictBigWestWinner<-function(team_list, df, model)
 {
@@ -350,8 +333,6 @@ predictBigWestWinner<-function(team_list, df, model)
   
   return(winner)
 }  
-
-#team_list = c('uc-davis-aggies','uc-irvine-anteaters','uc-santa-barbara-gauchos','long-beach-state-49ers','hawaii-rainbow-warriors','uc-riverside-highlanders','cal-poly-mustangs','csun-matadors','cal-state-fullerton-titans' )
 
 
 getHomeAwayMarginOfVictory<- function( team_name, df) {
@@ -528,12 +509,17 @@ plotDefensiveRating <- function( team_name, other_team_name, df) {
 # 7-10
 # 2-15
 
-#team_list = c('kentucky-wildcats', 'virginia-cavaliers',  'duke-blue-devils', 'villanova-wildcats',
-'arizona-wildcats', 'wisconsin-badgers', 'gonzaga-bulldogs', 'wichita-state-shockers', 
-'kansas-jayhawks', 'maryland-terrapins', 'uni-panthers', 'notre-dame-fighting-irish', 
-'utah-runnin-utes', 'baylor-bears', 'oklahoma-sooners', 'louisville-cardinals')
+#team_list = c('kentucky-wildcats', 'duke-blue-devils', 'virginia-cavaliers', 'villanova-wildcats',
+'arizona-wildcats', 'wisconsin-badgers', 'gonzaga-bulldogs', 'maryland-terrapins', 
+'kansas-jayhawks', 'uni-panthers', 'notre-dame-fighting-irish', 'wichita-state-shockers', 
+'iowa-state-cyclones', 'louisville-cardinals', 'oklahoma-sooners', 'baylor-bears')
 
 #predictBracketWinner(team_list, df, model)
+
+#west_list = c('villanova-wildcats', 'arizona-wildcats', 'notre-dame-fighting-irish', 'west-virginia-mountaineers',               
+'north-carolina-tar-heels', 'smu-mustangs',  'ohio-state-buckeyes', 'vcu-rams', 
+'cincinnati-bearcats', 'georgia-bulldogs', 'texas-longhorns', 'stephen-f-austin-lumberjacks',
+'georgia-state-panthers', 'northeastern-huskies', 'albany-great-danes', 'coastal-carolina-chanticleers')
 
 test_predictions<-function(game_date, data_date, df) 
 {
