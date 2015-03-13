@@ -218,8 +218,8 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
   
   # Produce/report a result message.
   teamWins = pointsScored$teamPointsScored > pointsScored$opponentPointsScored
-  msg = sprintf("%d scenarios of %s versus %s:", nScenarios, teamName, opponentName)
-  print(msg)
+  msg = sprintf("%d scenarios of %s versus %s:\n", nScenarios, teamName, opponentName)
+  cat(msg)
   nTeamWins = length(which(teamWins == TRUE))
   nOpponentWins = nScenarios - nTeamWins
   margin = numeric(nScenarios)
@@ -243,7 +243,7 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
   margin.max = max(margin)
   margin.mean = mean(margin)
   margin.sd = sd(margin)
-  xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f, sd = %5.2f.", win_team_name, scenarios_won, margin.mean, margin.sd)
+  xlabel = sprintf("%s wins %d scenarios with a mean margin of %4.1f, sd = %5.2f.\n", win_team_name, scenarios_won, margin.mean, margin.sd)
   
   x = seq(margin.min, margin.max, length=1000)
   y = dnorm(x, mean=margin.mean, sd=margin.sd)
@@ -251,7 +251,8 @@ predictWinner <- function(teamName, opponentName, df, model, nScenarios=10000)
   
   abline(v=(mean(margin)))
 
-  print(xlabel)
+  cat(xlabel)
+  cat("\n")
   
   return(win_team_name)
 }
@@ -267,8 +268,8 @@ predictBracketWinner<-function(team_list, df, model, nScenarios=10000)
   finalist = character(2)
   
   if (length(team_list == 16)) {
-    print(" ")
-    print("Round of 16:")
+    cat("\n")
+    cat("Round of 16:\n")
     quarter_finalist[1] = predictWinner(team_list[1], team_list[16], df, model, nScenarios) 
     quarter_finalist[2] = predictWinner(team_list[8], team_list[9], df, model, nScenarios)
     quarter_finalist[3] = predictWinner(team_list[5], team_list[12], df, model, nScenarios)
@@ -278,20 +279,20 @@ predictBracketWinner<-function(team_list, df, model, nScenarios=10000)
     quarter_finalist[7] = predictWinner(team_list[7], team_list[10], df, model, nScenarios)
     quarter_finalist[8] = predictWinner(team_list[2], team_list[15], df, model, nScenarios)
     
-    print(" ")
-    print("Quarter-finals:")
+    cat("\n")
+    cat("Quarter-finals:\n")
     semi_finalist[1] = predictWinner(quarter_finalist[1], quarter_finalist[2], df, model, nScenarios)
     semi_finalist[2] = predictWinner(quarter_finalist[3], quarter_finalist[4], df, model, nScenarios)
     semi_finalist[3] = predictWinner(quarter_finalist[5], quarter_finalist[6], df, model, nScenarios)
     semi_finalist[4] = predictWinner(quarter_finalist[7], quarter_finalist[8], df, model, nScenarios)
     
-    print(" ")
-    print("Semi-finals:")
+    cat("\n")
+    cat("Semi-finals:\n")
     finalist[1] = predictWinner(semi_finalist[1], semi_finalist[2], df, model, nScenarios)
     finalist[2] = predictWinner(semi_finalist[3], semi_finalist[4], df, model, nScenarios)
     
-    print(" ")
-    print("Final:")
+    cat("\n")
+    cat("Final:\n")
     winner = predictWinner(finalist[1], finalist[2], df, model, nScenarios)
   }
   else {
